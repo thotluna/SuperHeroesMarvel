@@ -7,10 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharactersUseCase
+import ve.com.teeac.mynewapplication.utils.Constants
 import ve.com.teeac.mynewapplication.utils.Response
 import javax.inject.Inject
 
@@ -31,6 +35,15 @@ constructor(
         getCharacters()
     }
 
+    fun onEvent(event: CharactersEvent) {
+        when (event) {
+            is CharactersEvent.LoadCharactersEvent -> {
+                _state = state.copy(offset = state.offset + Constants.limit.toInt())
+                getCharacters()
+            }
+        }
+    }
+
     private fun getCharacters() {
         job?.cancel()
         job = useCase(state.offset).onEach {
@@ -42,15 +55,17 @@ constructor(
                 }
 
                 is Response.Success -> {
-                    it.data?.let{ list ->
+                    it.data?.let { list ->
                         list.forEach { character ->
                             Timber.d("Character: $character")
                         }
+
+                        _state = _state.copy(
+                            isLoading = false,
+                            characters = if (state.characters.isEmpty()) list
+                            else state.characters + list,
+                        )
                     }
-                    _state = _state.copy(
-                        isLoading = false,
-                        characters = it.data ?: emptyList(),
-                    )
                 }
 
                 is Response.Error -> {
