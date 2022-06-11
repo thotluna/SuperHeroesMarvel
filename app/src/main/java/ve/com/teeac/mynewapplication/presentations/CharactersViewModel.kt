@@ -42,6 +42,11 @@ constructor(
                 }
 
                 is Response.Success -> {
+                    it.data?.let{ list ->
+                        list.forEach { character ->
+                            Timber.d("Character: $character")
+                        }
+                    }
                     _state = _state.copy(
                         isLoading = false,
                         characters = it.data ?: emptyList(),

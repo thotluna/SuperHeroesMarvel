@@ -37,7 +37,7 @@ fun CharacterScreen(
                 )
             }else{
                 LazyColumn{
-                    items(state.characters){
+                    items(items = state.characters, key = { it.id }) {
                         Text(
                             text = it.name,
                             style = MaterialTheme.typography.bodySmall
