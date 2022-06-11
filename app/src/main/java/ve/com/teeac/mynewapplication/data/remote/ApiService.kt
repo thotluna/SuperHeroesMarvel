@@ -9,9 +9,6 @@ interface ApiService {
 
     @GET("characters")
     suspend fun getCharacters(
-        @Query("apikey") apiKey: String = Constants.API_KEY,
-        @Query("ts") ts: String = Constants.ts,
-        @Query("hash") hash: String = Constants.hash(),
         @Query("offset") offset: String = "0"
     ): CharacterDataWrapper
 
