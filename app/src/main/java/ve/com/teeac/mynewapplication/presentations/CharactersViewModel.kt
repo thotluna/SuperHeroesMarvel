@@ -7,12 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharactersUseCase
 import ve.com.teeac.mynewapplication.utils.Constants
 import ve.com.teeac.mynewapplication.utils.Response
@@ -33,12 +29,17 @@ constructor(
 
     init {
         getCharacters()
+
     }
 
     fun onEvent(event: CharactersEvent) {
         when (event) {
             is CharactersEvent.LoadCharactersEvent -> {
                 _state = state.copy(offset = state.offset + Constants.limit.toInt())
+                getCharacters()
+            }
+            is CharactersEvent.Refresh -> {
+                _state = state.copy(offset = 0)
                 getCharacters()
             }
         }
@@ -56,15 +57,25 @@ constructor(
 
                 is Response.Success -> {
                     it.data?.let { list ->
-                        list.forEach { character ->
-                            Timber.d("Character: $character")
-                        }
 
-                        _state = _state.copy(
-                            isLoading = false,
-                            characters = if (state.characters.isEmpty()) list
-                            else state.characters + list,
-                        )
+                        if(list.isNotEmpty()) {
+                            _state = if(state.offset == 0) {
+                                _state.copy(
+                                    isLoading = false,
+                                    characters = list
+                                )
+                            }else{
+                                _state.copy(
+                                    isLoading = false,
+                                    characters = state.characters + list
+                                )
+                            }
+                        }else{
+                            _state = _state.copy(
+                                isLoading = false,
+                                characters = emptyList()
+                            )
+                        }
                     }
                 }
 

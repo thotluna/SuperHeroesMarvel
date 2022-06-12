@@ -7,4 +7,5 @@ data class CharactersState(
     val characters: List<Character> = listOf(),
     val error: String = "",
     val offset: Int = 0,
+    val isRefresh: Boolean = false
 )
