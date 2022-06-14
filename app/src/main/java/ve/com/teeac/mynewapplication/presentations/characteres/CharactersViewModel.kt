@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.presentations
+package ve.com.teeac.mynewapplication.presentations.characteres
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

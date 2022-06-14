@@ -1,6 +1,6 @@
 @file:Suppress("OPT_IN_IS_NOT_ENABLED")
 
-package ve.com.teeac.mynewapplication.presentations
+package ve.com.teeac.mynewapplication.presentations.characteres
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +26,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
 import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.models.Character
+import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
 import ve.com.teeac.mynewapplication.ui.theme.GrayMarvel
 import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
@@ -157,7 +158,7 @@ private fun LineComponent(height: Dp = 4.dp) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(4.dp)
+            .height(height)
             .background(RedMarvel)
     )
 }

@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.presentations
+package ve.com.teeac.mynewapplication.presentations.characteres
 
 import ve.com.teeac.mynewapplication.domain.models.Character
 

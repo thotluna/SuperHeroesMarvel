@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.presentations
+package ve.com.teeac.mynewapplication.core.presentations
 
 
 import androidx.compose.animation.core.*
