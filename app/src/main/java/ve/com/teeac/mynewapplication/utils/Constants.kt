@@ -4,6 +4,6 @@ class Constants {
 
     companion object{
         const val BASE_URL = "https://gateway.marvel.com:443/v1/public/"
-        const val limit = "20"
+        const val limit = "10"
     }
 }

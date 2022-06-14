@@ -9,7 +9,8 @@ interface ApiService {
 
     @GET("characters")
     suspend fun getCharacters(
-        @Query("offset") offset: String = "0"
+        @Query("offset") offset: String = "0",
+        @Query("limit") limit: String = Constants.limit
     ): CharacterDataWrapper
 
 }
