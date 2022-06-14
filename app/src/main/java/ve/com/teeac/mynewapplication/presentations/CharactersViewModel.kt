@@ -62,12 +62,16 @@ constructor(
                             _state = if(state.offset == 0) {
                                 _state.copy(
                                     isLoading = false,
-                                    characters = list
+                                    characters = list.filter { characters ->
+                                        characters.thumbnail.path != "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
+                                    }
                                 )
                             }else{
                                 _state.copy(
                                     isLoading = false,
-                                    characters = state.characters + list
+                                    characters = state.characters + list.filter { characters ->
+                                        characters.thumbnail.path != "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
+                                    }
                                 )
                             }
                         }else{
