@@ -2,6 +2,7 @@ package ve.com.teeac.mynewapplication.domain.models
 
 import ve.com.teeac.mynewapplication.data.dtos.*
 
+
 data class Character(
     val comics: Comics,
     val events: Events,

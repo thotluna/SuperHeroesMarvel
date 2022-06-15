@@ -32,9 +32,10 @@ import ve.com.teeac.mynewapplication.ui.theme.GrayMarvel
 import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 
 @Composable
-fun CharacterScreen(
+fun CharactersScreen(
+    modifier: Modifier = Modifier,
     viewModel: CharactersViewModel = hiltViewModel(),
-    goCharacterDetails: (Character) -> Unit = {}
+    goCharacterDetails: (Int) -> Unit = {}
 ) {
 
     val state = viewModel.state
@@ -48,7 +49,8 @@ fun CharacterScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .then(modifier)
         ) {
 
             Title(
@@ -61,8 +63,10 @@ fun CharacterScreen(
                 isLoading = state.isLoading,
                 state = gridState,
                 loadCharacters = { viewModel.onEvent(CharactersEvent.LoadCharactersEvent) },
-                navigateToDetails = { goCharacterDetails(it) }
-                )
+                navigateToDetails = {
+                    goCharacterDetails(it)
+                }
+            )
         }
     }
 }
@@ -74,7 +78,7 @@ private fun CharactersList(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     loadCharacters: () -> Unit,
-    navigateToDetails: (Character) -> Unit
+    navigateToDetails: (Int) -> Unit
 ) {
 
     LazyVerticalGrid(
@@ -105,12 +109,14 @@ private fun CharactersList(
 fun CharacterCard(
     character: Character,
     modifier: Modifier = Modifier,
-    onClick: (Character) -> Unit = {}
+    onClick: (Int) -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .height(350.dp)
-            .clickable { onClick(character) }
+            .clickable {
+                onClick(character.id)
+            }
             .then(modifier),
         shape = CutCornerShape(
             CornerSize(0.dp),
