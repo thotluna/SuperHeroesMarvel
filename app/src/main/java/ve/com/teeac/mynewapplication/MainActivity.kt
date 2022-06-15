@@ -8,7 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import ve.com.teeac.mynewapplication.presentations.characteres.CharacterScreen
+import ve.com.teeac.mynewapplication.presentations.characteres.CharactersScreen
+import ve.com.teeac.mynewapplication.presentations.navigations.AppGraph
 import ve.com.teeac.mynewapplication.ui.theme.MyNewApplicationTheme
 
 @AndroidEntryPoint
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 MyNewApplicationTheme {
-                    CharacterScreen()
+                    AppGraph()
                 }
             }
         }
