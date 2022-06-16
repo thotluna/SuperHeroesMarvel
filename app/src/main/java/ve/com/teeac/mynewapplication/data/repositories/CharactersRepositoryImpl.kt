@@ -17,4 +17,10 @@ constructor(private val service: ApiService): CharactersRepository
         }
     }
 
+    override suspend fun getCharacterById(id: Int): CharacterDataWrapper {
+        return withContext(Dispatchers.IO) {
+            service.getCharacterById( id )
+        }
+    }
+
 }

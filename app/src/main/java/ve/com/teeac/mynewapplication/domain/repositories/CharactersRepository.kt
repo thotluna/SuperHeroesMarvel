@@ -5,4 +5,6 @@ import ve.com.teeac.mynewapplication.data.dtos.CharacterDataWrapper
 interface CharactersRepository{
 
     suspend fun getCharacters(offset: Int): CharacterDataWrapper
+
+    suspend fun getCharacterById(id: Int): CharacterDataWrapper
 }
