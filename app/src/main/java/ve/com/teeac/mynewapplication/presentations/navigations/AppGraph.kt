@@ -25,23 +25,22 @@ fun AppGraph(
                 modifier = modifier,
                 goCharacterDetails = {
                     navController.navigate(
-                        DestinationScreen.CharacterDetail.withArgs(it.toString())
+                        DestinationScreen.CharacterDetail.createRoute(it)
                     )
                 }
             )
         }
-        composable(DestinationScreen.CharacterDetail.route + "/{id}",
+        composable(DestinationScreen.CharacterDetail.route + "?id={id}",
             arguments = listOf(
                 navArgument(name = "id") {
-                    type = NavType.StringType
+                    type = NavType.IntType
                     nullable = false
                 }
             )
 
-        ) { backStackEntry ->
+        ) {
             CharacterDetailScreen(
-                modifier = modifier,
-                id = backStackEntry.arguments!!.getString("id")!!.toInt(),
+                modifier = modifier
             )
         }
 
