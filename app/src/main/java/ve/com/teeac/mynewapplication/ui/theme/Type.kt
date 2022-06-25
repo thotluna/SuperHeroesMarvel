@@ -38,6 +38,21 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
     ),
+    titleMedium = TextStyle(
+        fontFamily = robotoCondensedBold,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+    ),
+    titleSmall = TextStyle(
+        fontFamily = robotoCondensedBold,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = robotoCondensedRegular,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

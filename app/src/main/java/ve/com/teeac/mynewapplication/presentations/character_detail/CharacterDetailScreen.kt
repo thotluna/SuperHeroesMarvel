@@ -2,23 +2,29 @@ package ve.com.teeac.mynewapplication.presentations.character_detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.skydoves.landscapist.glide.GlideImage
-import timber.log.Timber
-import ve.com.teeac.mynewapplication.data.dtos.*
 import ve.com.teeac.mynewapplication.domain.models.Character
+import ve.com.teeac.mynewapplication.domain.models.Item
 import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
 import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterDetailScreen(
     modifier: Modifier = Modifier,
@@ -29,15 +35,146 @@ fun CharacterDetailScreen(
         isLoading = state.isLoading,
         modifier = modifier
     ) {
-        Timber.d("Character: ${state.character}")
-        state.character?.let{ character ->
+        state.character?.let { character ->
             Header(character)
             Spacer(modifier = Modifier.height(16.dp))
-            if(character.description.isNotBlank()){
-                Text(text = character.description)
+            Section(title = "Description") {
+                Text(
+                    text = character.description.ifBlank {
+                        "Does not descriptions"
+                    },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Comics") {
+                if(character.comics.isNotEmpty()){
+                    ListItems(character.comics)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Events") {
+                if(character.comics.isNotEmpty()){
+                    ListItems(character.events)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Series") {
+                if(character.comics.isNotEmpty()){
+                    ListItems(character.series)
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Stories") {
+                if(character.comics.isNotEmpty()){
+                    ListItems(character.stories)
+                }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ListItems(listItems: List<Item>) {
+    LazyRow(
+        modifier = Modifier
+            .width(400.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(listItems) { item ->
+            item.thumbnail?.let {
+                ItemComic(url = it.getUrl(), title = item.title)
+            }
+        }
+    }
+}
+
+@Composable
+fun Section(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .then(modifier)
+    ) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(color = RedMarvel)
+                .padding(vertical = 4.dp)
+        )
+        content()
+    }
+
+}
+
+
+
+@ExperimentalMaterial3Api
+@Composable
+fun ItemComic(
+    url: String,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = Modifier
+            .width(150.dp)
+            .then(modifier),
+        colors = CardDefaults.cardColors(
+            containerColor = BlackMarvel
+        ),
+        shape = CutCornerShape(
+            CornerSize(0.dp),
+            CornerSize(0.dp),
+            CornerSize(16.dp),
+            CornerSize(0.dp)
+        )
+    ) {
+        Box(modifier = Modifier
+            .width(150.dp)
+            .height(225.dp)
+        ){
+            GlideImage(
+                imageModel = url,
+                contentScale = ContentScale.Crop,
+                loading = {
+                    Box(modifier = Modifier.matchParentSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                },
+                failure = { Text(text = "image request failed.") }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(color = RedMarvel)
+        )
+        Box(
+            modifier = Modifier
+                .height(80.dp)
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(1f)
+            )
+        }
+    }
+
 }
 
 @Composable
@@ -50,7 +187,7 @@ fun WrapperDetails(
         modifier = Modifier
             .fillMaxSize(1f)
             .padding(8.dp)
-            .background(BlackMarvel)
+            .verticalScroll(rememberScrollState())
             .then(modifier),
         contentAlignment = Alignment.Center
     ) {
@@ -59,8 +196,8 @@ fun WrapperDetails(
         } else {
             Column(
                 modifier = Modifier
-                    .fillMaxSize(1f)
                     .background(MaterialTheme.colorScheme.background)
+                    .align(Alignment.TopCenter)
             ) {
                 content()
             }
@@ -73,7 +210,7 @@ fun WrapperDetails(
 @Composable
 private fun Header(character: Character) {
     Card(
-        modifier = Modifier.height(IntrinsicSize.Max),
+        modifier = Modifier.height(200.dp),
         shape = CutCornerShape(
             CornerSize(0.dp),
             CornerSize(0.dp),
