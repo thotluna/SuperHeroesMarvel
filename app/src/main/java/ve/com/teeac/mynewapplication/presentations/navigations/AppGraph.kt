@@ -40,7 +40,7 @@ fun AppGraph(
 
         ) {
             CharacterDetailScreen(
-                modifier = modifier
+//                modifier = modifier
             )
         }
 

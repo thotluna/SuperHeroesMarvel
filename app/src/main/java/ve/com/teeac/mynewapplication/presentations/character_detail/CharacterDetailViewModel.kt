@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacterByIdUseCase
 import ve.com.teeac.mynewapplication.utils.Response
 import javax.inject.Inject
@@ -19,7 +20,7 @@ class CharacterDetailViewModel
 @Inject
 constructor(
     private val useCase: GetCharacterByIdUseCase,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private var job: Job? = null
@@ -55,11 +56,14 @@ constructor(
     private fun getCharacter(id: Int) {
        job?.cancel()
        job = useCase(id).onEach {
+           Timber.d("Intro of getCharacter - Character for UseCase:")
            _state = when(it){
                is Response.Loading -> state.copy(isLoading = true)
                is Response.Success -> state.copy(isLoading = false, character = it.data)
                is Response.Error -> state.copy(isLoading = false, error = it.message)
            }
+           Timber.d("Intro of getCharacter - Character for UseCase: $state, $it")
        }.launchIn(viewModelScope)
     }
+
 }

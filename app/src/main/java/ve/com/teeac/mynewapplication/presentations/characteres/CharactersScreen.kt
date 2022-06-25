@@ -15,9 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,10 +23,10 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
 import timber.log.Timber
-import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
+import ve.com.teeac.mynewapplication.domain.models.CharacterItem
+import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
-import ve.com.teeac.mynewapplication.ui.theme.GrayMarvel
 import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 
 @Composable
@@ -73,7 +71,7 @@ fun CharactersScreen(
 
 @Composable
 private fun CharactersList(
-    list: List<Character>,
+    list: List<CharacterItem>,
     state: LazyGridState,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
@@ -107,7 +105,7 @@ private fun CharactersList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterCard(
-    character: Character,
+    character: CharacterItem,
     modifier: Modifier = Modifier,
     onClick: (Int) -> Unit = {}
 ) {
@@ -169,42 +167,7 @@ private fun LineComponent(height: Dp = 4.dp) {
     )
 }
 
-@Composable
-private fun CharacterName(
-    characterName: String,
-    modifier: Modifier
-) {
-    Box(
-        modifier = Modifier
-            .then(modifier)
-    ) {
-        val names = characterName.split("(", ")")
-        Text(
-            text = names[0].uppercase(),
-            style = MaterialTheme.typography.labelLarge,
-            color = Color.White,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopStart)
 
-        )
-        if (names.size > 1) {
-            Text(
-                text = names[1].uppercase(),
-                style = MaterialTheme.typography.labelLarge,
-                color = GrayMarvel,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .align(Alignment.BottomStart)
-
-            )
-        }
-    }
-}
 
 
 @Composable
