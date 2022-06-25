@@ -1,11 +1,11 @@
 package ve.com.teeac.mynewapplication.data.dtos
 
-data class CharacterDataWrapper(
+open class DataWrapper<T>(
     val attributionHTML: String,
     val attributionText: String,
     val code: Int,
     val copyright: String,
-    val `data`: CharacterDataContainer,
+    val `data`: DataContainer<T>,
     val etag: String,
     val status: String
 )

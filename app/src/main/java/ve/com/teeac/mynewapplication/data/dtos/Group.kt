@@ -1,8 +1,8 @@
 package ve.com.teeac.mynewapplication.data.dtos
 
-data class Series(
+data class Group<T>(
     val available: Int,
     val collectionURI: String,
-    val items: List<Item>,
+    val items: List<T>,
     val returned: Int
 )

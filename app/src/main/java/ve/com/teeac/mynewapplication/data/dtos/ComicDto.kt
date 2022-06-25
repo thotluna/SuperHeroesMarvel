@@ -1,0 +1,33 @@
+package ve.com.teeac.mynewapplication.data.dtos
+
+data class ComicDto(
+    val characters: Group<Item>,
+    val collectedIssues: List<Any>,
+    val collections: List<Any>,
+    val creators: Group<ItemXX>,
+    val dates: List<Date>,
+    val description: String,
+    val diamondCode: String,
+    val digitalId: Int,
+    val ean: String,
+    val events: Group<Item>,
+    val format: String,
+    val id: Int,
+    val images: List<Thumbnail>,
+    val isbn: String,
+    val issn: String,
+    val issueNumber: Int,
+    val modified: String,
+    val pageCount: Int,
+    val prices: List<Price>,
+    val resourceURI: String,
+    val series: Group<Item>,
+    val stories: Group<ItemXXX>,
+    val textObjects: List<TextObject>,
+    val thumbnail: Thumbnail,
+    val title: String,
+    val upc: String,
+    val urls: List<Url>,
+    val variantDescription: String,
+    val variants: List<Any>
+)
