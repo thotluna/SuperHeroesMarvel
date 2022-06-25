@@ -1,15 +1,15 @@
 package ve.com.teeac.mynewapplication.data.dtos
 
-data class CharacterDTO(
-    val comics: Comics,
+data class CharacterDto(
+    val comics: Group<Item>,
     val description: String,
-    val events: Events,
+    val events: Group<Item>,
     val id: Int,
     val modified: String,
     val name: String,
     val resourceURI: String,
-    val series: Series,
-    val stories: Stories,
+    val series: Group<Item>,
+    val stories: Group<ItemXXX>,
     val thumbnail: Thumbnail,
     val urls: List<Url>
 )

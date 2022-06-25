@@ -1,10 +1,22 @@
 package ve.com.teeac.mynewapplication.domain.repositories
 
-import ve.com.teeac.mynewapplication.data.dtos.CharacterDataWrapper
+import ve.com.teeac.mynewapplication.domain.models.Character
+import ve.com.teeac.mynewapplication.domain.models.CharacterItem
+import ve.com.teeac.mynewapplication.domain.models.Item
 
 interface CharactersRepository{
 
-    suspend fun getCharacters(offset: Int): CharacterDataWrapper
+    suspend fun getCharacters(offset: Int): List<CharacterItem>
 
-    suspend fun getCharacterById(id: Int): CharacterDataWrapper
+    suspend fun getCharacterById(id: Int): Character
+
+    suspend fun getComicByCharacterId(id: Int): List<Item>
+
+    suspend fun getEventsByCharacterId(id: Int): List<Item>
+
+    suspend fun getSeriesByCharacterId(id: Int): List<Item>
+
+    suspend fun getStoriesByCharacterId(id: Int): List<Item>
+
+    suspend fun getCharacter(id: Int): Character
 }
