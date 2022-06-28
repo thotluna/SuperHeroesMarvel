@@ -27,9 +27,13 @@ import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 @Composable
 fun CharacterDetailScreen(
     modifier: Modifier = Modifier,
+    title: (String) -> Unit,
+    isLoading: (Boolean) -> Unit,
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
+    title( if(state.character != null) state.character.name else "Details")
+    isLoading(state.isLoading)
     WrapperDetails(
         isLoading = state.isLoading,
         modifier = modifier

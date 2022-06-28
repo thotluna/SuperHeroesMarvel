@@ -22,8 +22,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
-import timber.log.Timber
-import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
@@ -33,12 +31,17 @@ import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 fun CharactersScreen(
     modifier: Modifier = Modifier,
     viewModel: CharactersViewModel = hiltViewModel(),
-    goCharacterDetails: (Int) -> Unit = {}
+    goCharacterDetails: (Int) -> Unit = {},
+    title: (String) -> Unit,
+    isLoading: (Boolean) -> Unit
 ) {
 
     val state = viewModel.state
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isRefresh)
     val gridState = rememberLazyGridState()
+
+    title("Characters")
+    isLoading(state.isLoading)
 
     SwipeRefresh(
         state = swipeRefreshState,
@@ -47,15 +50,9 @@ fun CharactersScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp )
                 .then(modifier)
         ) {
-
-            Title(
-                isLoading = state.isLoading,
-                modifier = Modifier
-            )
-
             CharactersList(
                 list = state.characters,
                 isLoading = state.isLoading,
@@ -165,35 +162,4 @@ private fun LineComponent(height: Dp = 4.dp) {
             .height(height)
             .background(RedMarvel)
     )
-}
-
-
-
-
-@Composable
-private fun Title(
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Characters",
-            modifier = Modifier
-                .then(modifier),
-            style = MaterialTheme.typography.headlineLarge
-        )
-        if (isLoading) {
-            Timber.d("is loading ...")
-            LoadingAnimation(
-                circleSize = 10.dp,
-                travelDistance = 10.dp,
-                spaceBetween = 6.dp
-            )
-        }
-    }
 }

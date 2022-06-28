@@ -1,5 +1,6 @@
 package ve.com.teeac.mynewapplication.presentations.navigations
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,9 +12,12 @@ import androidx.navigation.navArgument
 import ve.com.teeac.mynewapplication.presentations.character_detail.CharacterDetailScreen
 import ve.com.teeac.mynewapplication.presentations.characteres.CharactersScreen
 
+@ExperimentalMaterial3Api
 @Composable
 fun AppGraph(
     modifier: Modifier = Modifier,
+    title: (String) -> Unit,
+    isLoading: (Boolean) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(
@@ -27,7 +31,9 @@ fun AppGraph(
                     navController.navigate(
                         DestinationScreen.CharacterDetail.createRoute(it)
                     )
-                }
+                },
+                title = { title(it) },
+                isLoading = { isLoading(it) }
             )
         }
         composable(DestinationScreen.CharacterDetail.route + "?id={id}",
@@ -40,7 +46,9 @@ fun AppGraph(
 
         ) {
             CharacterDetailScreen(
-//                modifier = modifier
+                title = { title(it) },
+                isLoading = { isLoading(it) },
+                modifier = modifier
             )
         }
 
