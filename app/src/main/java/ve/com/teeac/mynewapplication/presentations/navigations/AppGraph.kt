@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ve.com.teeac.mynewapplication.presentations.character_detail.CharacterDetailScreen
 import ve.com.teeac.mynewapplication.presentations.characteres.CharactersScreen
+import ve.com.teeac.mynewapplication.presentations.image.ShowImageScreen
 
 @ExperimentalMaterial3Api
 @Composable
@@ -27,19 +28,27 @@ fun AppGraph(
         composable(DestinationScreen.Characters.route) {
             CharactersScreen(
                 modifier = modifier,
-                goCharacterDetails = {
+                goCharacterDetails = { id, name, url ->
                     navController.navigate(
-                        DestinationScreen.CharacterDetail.createRoute(it)
+                        DestinationScreen.CharacterDetail.createRoute(id, name, url)
                     )
                 },
                 title = { title(it) },
                 isLoading = { isLoading(it) }
             )
         }
-        composable(DestinationScreen.CharacterDetail.route + "?id={id}",
+        composable(DestinationScreen.CharacterDetail.route + "?id={id}&name={name}&imageurl={imageurl}",
             arguments = listOf(
                 navArgument(name = "id") {
                     type = NavType.IntType
+                    nullable = false
+                },
+                navArgument(name = "name"){
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument(name = "imageurl"){
+                    type = NavType.StringType
                     nullable = false
                 }
             )
@@ -48,9 +57,25 @@ fun AppGraph(
             CharacterDetailScreen(
                 title = { title(it) },
                 isLoading = { isLoading(it) },
-                modifier = modifier
+                modifier = modifier,
+                navigateImage = { url ->
+                    navController.navigate(
+                        DestinationScreen.ShowImage.createRoute(url)
+                    )
+                }
             )
         }
+        composable(DestinationScreen.ShowImage.route + "?imageurl={imageurl}",
+            arguments = listOf(
+                navArgument(name = "imageurl") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) {
+            ShowImageScreen(modifier = modifier)
+        }
+
 
     }
 

@@ -11,6 +11,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import ve.com.teeac.mynewapplication.data.dtos.Thumbnail
+import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacterByIdUseCase
 import ve.com.teeac.mynewapplication.utils.Response
 import javax.inject.Inject
@@ -30,9 +32,22 @@ constructor(
         get() = _state
 
     init {
-        savedStateHandle.get<Int?>("id")?.let {
-            _state = state.copy(id = it)
-        }
+        val id = savedStateHandle.get<Int?>("id") ?: -1
+        val name = savedStateHandle.get<String>("name") ?: ""
+        val imageUrl = savedStateHandle.get<String>("imageurl")?.split("portrait_xlarge")
+        val thumbnail = imageUrl?.let {
+            Thumbnail(imageUrl[1],"${ imageUrl[0] }portrait_xlarge" )
+        }?: Thumbnail("","")
+        Timber.d("thumbnail: $thumbnail, $imageUrl")
+        val newCharacter = Character(id, name, thumbnail, "", emptyList(), emptyList(), emptyList(), emptyList())
+//        savedStateHandle.get<Int?>("id")?.let {
+//            _state = state.copy(id = it)
+//        }
+
+        _state = state.copy(
+            id = id,
+            character = newCharacter
+        )
 
         getCharacter(state.id)
     }
@@ -59,7 +74,7 @@ constructor(
            Timber.d("Intro of getCharacter - Character for UseCase:")
            _state = when(it){
                is Response.Loading -> state.copy(isLoading = true)
-               is Response.Success -> state.copy(isLoading = false, character = it.data)
+               is Response.Success -> state.copy(isLoading = false, character = it.data!!)
                is Response.Error -> state.copy(isLoading = false, error = it.message)
            }
            Timber.d("Intro of getCharacter - Character for UseCase: $state, $it")
