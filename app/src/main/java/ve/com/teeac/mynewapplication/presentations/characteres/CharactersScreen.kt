@@ -16,9 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
@@ -31,7 +36,7 @@ import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 fun CharactersScreen(
     modifier: Modifier = Modifier,
     viewModel: CharactersViewModel = hiltViewModel(),
-    goCharacterDetails: (Int) -> Unit = {},
+    goCharacterDetails: (Int, String, String) -> Unit,
     title: (String) -> Unit,
     isLoading: (Boolean) -> Unit
 ) {
@@ -58,8 +63,8 @@ fun CharactersScreen(
                 isLoading = state.isLoading,
                 state = gridState,
                 loadCharacters = { viewModel.onEvent(CharactersEvent.LoadCharactersEvent) },
-                navigateToDetails = {
-                    goCharacterDetails(it)
+                navigateToDetails = { id, name, url ->
+                    goCharacterDetails(id, name, url)
                 }
             )
         }
@@ -73,7 +78,7 @@ private fun CharactersList(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     loadCharacters: () -> Unit,
-    navigateToDetails: (Int) -> Unit
+    navigateToDetails: (Int, String, String) -> Unit
 ) {
 
     LazyVerticalGrid(
@@ -91,8 +96,8 @@ private fun CharactersList(
             }
             CharacterCard(
                 character = list[index],
-                onClick = {
-                    navigateToDetails(it)
+                onClick = { id, name, url ->
+                    navigateToDetails(id, name, url)
                 }
             )
         }
@@ -104,13 +109,17 @@ private fun CharactersList(
 fun CharacterCard(
     character: CharacterItem,
     modifier: Modifier = Modifier,
-    onClick: (Int) -> Unit = {}
+    onClick: (Int, String, String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .height(350.dp)
             .clickable {
-                onClick(character.id)
+                onClick(
+                    character.id,
+                    character.name,
+                    character.thumbnail.getUrl()
+                )
             }
             .then(modifier),
         shape = CutCornerShape(
@@ -129,6 +138,14 @@ fun CharacterCard(
         ) {
             GlideImage(
                 imageModel = "${character.thumbnail.path}/portrait_xlarge.${character.thumbnail.extension}",
+                requestBuilder = {
+                    Glide
+                        .with(LocalContext.current)
+                        .asDrawable()
+                        .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                        .thumbnail(0.6f)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                },
                 modifier = modifier
                     .aspectRatio(.7f),
                 contentScale = ContentScale.Crop,

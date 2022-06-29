@@ -1,6 +1,7 @@
 package ve.com.teeac.mynewapplication.presentations.character_detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,10 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import com.skydoves.landscapist.glide.GlideImage
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.Item
@@ -29,71 +35,67 @@ fun CharacterDetailScreen(
     modifier: Modifier = Modifier,
     title: (String) -> Unit,
     isLoading: (Boolean) -> Unit,
+    navigateImage: (String) -> Unit,
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    title( if(state.character != null) state.character.name else "Details")
+    title(state.character.name)
     isLoading(state.isLoading)
-    WrapperDetails(
-        isLoading = state.isLoading,
-        modifier = modifier
-    ) {
-        state.character?.let { character ->
-            Header(character)
-            Spacer(modifier = Modifier.height(16.dp))
-            Section(title = "Description") {
-                Text(
-                    text = character.description.ifBlank {
-                        "Does not descriptions"
-                    },
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Section(title = "Comics") {
-                ListItems(character.comics)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Section(title = "Events") {
-                ListItems(character.events)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Section(title = "Series") {
-                ListItems(character.series)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Section(title = "Stories") {
-                ListItems(character.stories)
-            }
+    WrapperDetails(modifier = modifier) {
+        Header(state.character)
+        Spacer(modifier = Modifier.height(16.dp))
+        Section(title = "Description") {
+            Text(
+                text = state.character.description.ifBlank {
+                    "Does not descriptions"
+                },
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Section(title = "Comics") {
+            ListItems(
+                state.character.comics,
+                onClick = {url -> navigateImage(url) }
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Section(title = "Events") {
+            ListItems(
+                state.character.events,
+                onClick = {url -> navigateImage(url) }
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Section(title = "Series") {
+            ListItems(
+                state.character.series,
+                onClick = {url -> navigateImage(url) }
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Section(title = "Stories") {
+            ListItems(
+                state.character.stories,
+                onClick = {url -> navigateImage(url) }
+            )
         }
     }
 }
 
 @Composable
 fun WrapperDetails(
-    isLoading: Boolean,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize(1f)
             .padding(8.dp)
             .verticalScroll(rememberScrollState())
             .then(modifier),
-        contentAlignment = Alignment.Center
     ) {
-        if (isLoading) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
-        } else {
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .align(Alignment.TopCenter)
-            ) {
-                content()
-            }
-        }
+        content()
     }
 
 }
@@ -118,10 +120,12 @@ fun CardWrapper(
 @ExperimentalMaterial3Api
 @Composable
 private fun Header(character: Character) {
-    CardWrapper( modifier = Modifier.height(200.dp) ) {
-        Row( modifier = Modifier
-            .fillMaxWidth(1f)
-            .height(IntrinsicSize.Max) ) {
+    CardWrapper(modifier = Modifier.height(200.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .height(IntrinsicSize.Max)
+        ) {
             Image(
                 imageUrl = character.thumbnail.getUrl(),
                 modifier = Modifier.weight(1f)
@@ -164,7 +168,9 @@ private fun Image(
 ) {
     GlideImage(
         imageModel = imageUrl,
-        modifier = modifier,
+        modifier = Modifier
+            .aspectRatio(.7f)
+            .then(modifier),
         contentScale = ContentScale.Crop,
         loading = {
             Box(modifier = Modifier.matchParentSize()) {
@@ -185,6 +191,7 @@ fun Section(
 ) {
     Column(
         modifier = Modifier
+
             .then(modifier)
     ) {
         Text(text = title, style = MaterialTheme.typography.titleMedium)
@@ -198,7 +205,10 @@ fun Section(
 
 @ExperimentalMaterial3Api
 @Composable
-private fun ListItems(listItems: List<Item>) {
+private fun ListItems(
+    listItems: List<Item>,
+    onClick: (String) -> Unit = {}
+) {
     if (listItems.isNotEmpty()) {
         LazyRow(
             modifier = Modifier
@@ -207,7 +217,11 @@ private fun ListItems(listItems: List<Item>) {
         ) {
             items(listItems) { item ->
                 item.thumbnail?.let {
-                    ItemComic(url = it.getUrl(), title = item.title)
+                    ItemComic(
+                        url = it.getUrl(),
+                        title = item.title,
+                        onClick = {url -> onClick(url)}
+                    )
                 }
             }
         }
@@ -215,18 +229,18 @@ private fun ListItems(listItems: List<Item>) {
 }
 
 
-
-
 @ExperimentalMaterial3Api
 @Composable
 fun ItemComic(
     url: String,
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (String) -> Unit = {}
 ) {
     CardWrapper(
         modifier = Modifier
             .width(150.dp)
+            .clickable { onClick(url) }
             .then(modifier)
     ) {
         Box(
