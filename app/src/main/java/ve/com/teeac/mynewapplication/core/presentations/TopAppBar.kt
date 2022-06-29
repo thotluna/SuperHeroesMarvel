@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 
 @Composable
 fun TopAppBar(
@@ -46,7 +47,7 @@ fun TopAppBar(
                 circleSize = 10.dp,
                 travelDistance = 10.dp,
                 spaceBetween = 6.dp,
-                circleColor = MaterialTheme.colorScheme.secondary
+                circleColor = RedMarvel
             )
         }
     }
