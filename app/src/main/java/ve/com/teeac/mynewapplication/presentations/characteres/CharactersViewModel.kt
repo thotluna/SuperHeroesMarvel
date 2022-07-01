@@ -42,12 +42,22 @@ constructor(
                 _state = state.copy(offset = 0)
                 getCharacters()
             }
+            is CharactersEvent.ChangeNameStart -> {
+                _state = state.copy(
+                    nameStartsWith = event.name,
+                    offset = 0,
+                    characters = emptyList()
+                )
+                if (event.name.isNotEmpty()) {
+                    getCharacters()
+                }
+            }
         }
     }
 
     private fun getCharacters() {
         job?.cancel()
-        job = useCase(state.offset).onEach {
+        job = useCase(state.offset, state.nameStartsWith).onEach {
             when (it) {
                 is Response.Loading -> {
                     _state = _state.copy(
@@ -56,31 +66,17 @@ constructor(
                 }
 
                 is Response.Success -> {
-                    it.data?.let { list ->
-
-                        if(list.isNotEmpty()) {
-                            _state = if(state.offset == 0) {
+                    _state = if(it.data != null) {
                                 _state.copy(
                                     isLoading = false,
-                                    characters = list.filter { characters ->
-                                        characters.thumbnail.path != "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
-                                    }
+                                    characters = state.characters + it.data
                                 )
                             }else{
                                 _state.copy(
                                     isLoading = false,
-                                    characters = state.characters + list.filter { characters ->
-                                        characters.thumbnail.path != "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
-                                    }
+                                    characters = emptyList()
                                 )
                             }
-                        }else{
-                            _state = _state.copy(
-                                isLoading = false,
-                                characters = emptyList()
-                            )
-                        }
-                    }
                 }
 
                 is Response.Error -> {

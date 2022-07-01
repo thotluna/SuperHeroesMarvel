@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,9 +58,20 @@ fun CharactersScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp )
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp)
                 .then(modifier)
         ) {
+            OutlinedTextField(
+                value = state.nameStartsWith,
+                onValueChange = { viewModel.onEvent(CharactersEvent.ChangeNameStart(it)) },
+                trailingIcon = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+                },
+                modifier = Modifier
+                    .fillMaxWidth(1f),
+                shape = RoundedCornerShape(CornerSize(64.dp)),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             CharactersList(
                 list = state.characters,
                 isLoading = state.isLoading,

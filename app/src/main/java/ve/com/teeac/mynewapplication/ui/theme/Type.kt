@@ -9,9 +9,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ve.com.teeac.mynewapplication.R
 
-val robotoCondensedLight = FontFamily(
-    Font( R.font.roboto_condensed_light ),
-)
 val robotoCondensedBold = FontFamily(
     Font( R.font.roboto_condensed_bold ),
 )

@@ -6,7 +6,7 @@ import ve.com.teeac.mynewapplication.domain.models.Item
 
 interface CharactersRepository{
 
-    suspend fun getCharacters(offset: Int): List<CharacterItem>
+    suspend fun getCharacters(offset: Int, nameStartsWith: String = ""): List<CharacterItem>
 
     suspend fun getCharacterById(id: Int): Character
 

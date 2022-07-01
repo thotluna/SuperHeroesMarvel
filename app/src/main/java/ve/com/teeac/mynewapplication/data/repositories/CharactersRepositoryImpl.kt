@@ -5,8 +5,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import ve.com.teeac.mynewapplication.data.remote.ApiService
-import ve.com.teeac.mynewapplication.domain.mappers.ItemMapper
-import ve.com.teeac.mynewapplication.domain.mappers.ModelsMapper
+import ve.com.teeac.mynewapplication.data.mappers.ItemMapper
+import ve.com.teeac.mynewapplication.data.mappers.ModelsMapper
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.domain.models.Item
@@ -16,27 +16,34 @@ import javax.inject.Inject
 class CharactersRepositoryImpl
 @Inject
 constructor(private val service: ApiService) : CharactersRepository {
-    override suspend fun getCharacters(offset: Int): List<CharacterItem> {
+    override suspend fun getCharacters(offset: Int, nameStartsWith: String): List<CharacterItem> {
         return withContext(Dispatchers.IO) {
-            service.getCharacters(offset = offset.toString())
-                .data.results.map { characterDto ->
-                    ItemMapper.characterDtoToCharacterItem(characterDto)
-                }
+            if(nameStartsWith.isEmpty()) {
+                service.getCharacters(offset = offset.toString())
+                    .data.results.map { dto ->
+                        ItemMapper.characterDtoToCharacterItem(dto)
+                    }
+            } else {
+                service.getCharactersByStartName(offset = offset.toString(), nameStartsWith = nameStartsWith)
+                    .data.results.map { characterDto ->
+                        ItemMapper.characterDtoToCharacterItem(characterDto)
+                    }
+            }
         }
     }
 
     override suspend fun getCharacterById(id: Int): Character {
         return withContext(Dispatchers.IO) {
-            val characterDto = service.getCharacterById(id).data.results.first()
-            return@withContext ModelsMapper.characterDtoToCharacter(characterDto)
+            val dto = service.getCharacterById(id).data.results.first()
+            return@withContext ModelsMapper.characterDtoToCharacter(dto)
         }
     }
 
     override suspend fun getComicByCharacterId(id: Int): List<Item> {
         return withContext(Dispatchers.IO) {
             service.getComicByCharacterId(id)
-                .data.results.map { comicDto ->
-                    ItemMapper.comicToDto(comicDto)
+                .data.results.map { dto ->
+                    ItemMapper.comicToDto(dto)
                 }
         }
     }
@@ -44,8 +51,8 @@ constructor(private val service: ApiService) : CharactersRepository {
     override suspend fun getEventsByCharacterId(id: Int): List<Item> {
         return withContext(Dispatchers.IO) {
             service.getEventsByCharacterId(id)
-                .data.results.map { eventDto ->
-                    ItemMapper.eventToDto(eventDto)
+                .data.results.map { dto ->
+                    ItemMapper.eventToDto(dto)
                 }
         }
     }
@@ -54,8 +61,8 @@ constructor(private val service: ApiService) : CharactersRepository {
         Timber.d("Character: series")
         return withContext(Dispatchers.IO) {
             service.getSeriesByCharacterId(id)
-                .data.results.map { seriesDto ->
-                    ItemMapper.seriesToDto(seriesDto)
+                .data.results.map { dto ->
+                    ItemMapper.seriesToDto(dto)
                 }
         }
     }
@@ -64,8 +71,8 @@ constructor(private val service: ApiService) : CharactersRepository {
         Timber.d("Character: stories")
         return withContext(Dispatchers.IO) {
             service.getStoriesByCharacterId(id)
-                .data.results.map { storyDto ->
-                    ItemMapper.storyToDto(storyDto)
+                .data.results.map { dto ->
+                    ItemMapper.storyToDto(dto)
                 }
         }
     }
@@ -83,12 +90,6 @@ constructor(private val service: ApiService) : CharactersRepository {
             val eventsDto = eventsDeferred.await().data.results
             val seriesDto = seriesDeferred.await().data.results
             val storiesDto = storiesDeferred.await().data.results
-
-            Timber.d("Character: $characterDto")
-            Timber.d("Character: comics $comicDto")
-            Timber.d("Character: events $eventsDto")
-            Timber.d("Character: series $seriesDto")
-            Timber.d("Character: stories $storiesDto")
 
 
             return@withContext ModelsMapper.characterDtoToCharacter(characterDto).copy(

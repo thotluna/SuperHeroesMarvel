@@ -11,7 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import ve.com.teeac.mynewapplication.data.dtos.Thumbnail
+import ve.com.teeac.mynewapplication.domain.models.Thumbnail
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacterByIdUseCase
 import ve.com.teeac.mynewapplication.utils.Response
@@ -40,9 +40,6 @@ constructor(
         }?: Thumbnail("","")
         Timber.d("thumbnail: $thumbnail, $imageUrl")
         val newCharacter = Character(id, name, thumbnail, "", emptyList(), emptyList(), emptyList(), emptyList())
-//        savedStateHandle.get<Int?>("id")?.let {
-//            _state = state.copy(id = it)
-//        }
 
         _state = state.copy(
             id = id,
@@ -51,7 +48,6 @@ constructor(
 
         getCharacter(state.id)
     }
-
 
     fun onEvent(event: CharacterDetailEvent) {
         when (event) {

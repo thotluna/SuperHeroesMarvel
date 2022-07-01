@@ -14,6 +14,13 @@ interface ApiService {
         @Query("limit") limit: String = Constants.limit
     ): DataWrapper<CharacterDto>
 
+    @GET("characters")
+    suspend fun getCharactersByStartName(
+        @Query("nameStartsWith") nameStartsWith: String,
+        @Query("offset") offset: String = "0",
+        @Query("limit") limit: String = Constants.limit
+    ): DataWrapper<CharacterDto>
+
     @GET("characters/{id}")
     suspend fun getCharacterById(
         @Path("id") id: Int
