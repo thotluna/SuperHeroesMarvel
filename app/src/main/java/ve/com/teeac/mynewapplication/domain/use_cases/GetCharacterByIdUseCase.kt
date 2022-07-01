@@ -2,7 +2,6 @@ package ve.com.teeac.mynewapplication.domain.use_cases
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.repositories.CharactersRepository
 import ve.com.teeac.mynewapplication.utils.Response

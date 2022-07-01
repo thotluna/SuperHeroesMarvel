@@ -1,5 +1,6 @@
 package ve.com.teeac.mynewapplication.data.dtos
 
+
 data class EventDto(
     val characters: Group<Item>,
     val comics: Group<Item>,
@@ -14,7 +15,7 @@ data class EventDto(
     val series: Group<Item>,
     val start: String,
     val stories: Group<ItemXXXX>,
-    val thumbnail: Thumbnail?,
+    val thumbnail: ThumbnailDto?,
     val title: String,
     val urls: List<Url>
 )

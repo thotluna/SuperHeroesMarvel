@@ -1,9 +1,10 @@
-package ve.com.teeac.mynewapplication.domain.mappers
+package ve.com.teeac.mynewapplication.data.mappers
 
 import timber.log.Timber
 import ve.com.teeac.mynewapplication.data.dtos.*
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.domain.models.Item
+import ve.com.teeac.mynewapplication.domain.models.Thumbnail
 
 object ItemMapper {
 
@@ -11,7 +12,7 @@ object ItemMapper {
         return CharacterItem(
             id = characterDTO.id,
             name = characterDTO.name,
-            thumbnail = characterDTO.thumbnail
+            thumbnail = thumbnailToDto(characterDTO.thumbnail)
         )
     }
 
@@ -21,7 +22,7 @@ object ItemMapper {
                 id = dto.id,
                 title = dto.title,
                 description = dto.description,
-                thumbnail = dto.thumbnail
+                thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
             Timber.e("Error in comic to dto")
@@ -35,7 +36,7 @@ object ItemMapper {
                 id = dto.id,
                 title = dto.title,
                 description = dto.description,
-                thumbnail = dto.thumbnail
+                thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
             Timber.e("Error in series to dto")
@@ -49,7 +50,7 @@ object ItemMapper {
                 id = dto.id,
                 title = dto.title,
                 description = dto.description,
-                thumbnail = dto.thumbnail
+                thumbnail = dto.thumbnail?.let { thumbnailToDto(it) }
             )
         }catch (e: Exception){
             Timber.e("Error in event to dto")
@@ -63,12 +64,16 @@ object ItemMapper {
                 id = dto.id,
                 title = dto.title,
                 description = dto.description,
-                thumbnail = dto.thumbnail
+                thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
             Timber.e("Error in story to dto")
             throw e
         }
+    }
+
+    fun thumbnailToDto(dto: ThumbnailDto): Thumbnail{
+        return Thumbnail(dto.extension, dto.path)
     }
 
 }

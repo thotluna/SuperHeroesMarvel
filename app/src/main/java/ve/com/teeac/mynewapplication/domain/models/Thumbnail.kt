@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.data.dtos
+package ve.com.teeac.mynewapplication.domain.models
 
 data class Thumbnail(
     val extension: String,

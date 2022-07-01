@@ -10,6 +10,6 @@ data class CharacterDto(
     val resourceURI: String,
     val series: Group<Item>,
     val stories: Group<ItemXXX>,
-    val thumbnail: Thumbnail,
+    val thumbnail: ThumbnailDto,
     val urls: List<Url>
 )

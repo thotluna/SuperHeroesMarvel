@@ -1,8 +1,5 @@
 package ve.com.teeac.mynewapplication.domain.models
 
-import ve.com.teeac.mynewapplication.data.dtos.*
-import ve.com.teeac.mynewapplication.data.dtos.Thumbnail
-
 
 data class Character(
     val id: Int = -1,

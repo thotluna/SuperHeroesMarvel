@@ -1,9 +1,5 @@
 package ve.com.teeac.mynewapplication.data.dtos
 
-import ve.com.teeac.mynewapplication.data.dtos.Item
-import ve.com.teeac.mynewapplication.data.dtos.ItemXX
-import ve.com.teeac.mynewapplication.data.dtos.Group
-
 data class StoryDto(
     val characters: Group<Item>,
     val comics: Group<Item>,
@@ -15,7 +11,7 @@ data class StoryDto(
     val originalIssue: Item,
     val resourceURI: String,
     val series: Group<Item>,
-    val thumbnail: Thumbnail,
+    val thumbnail: ThumbnailDto,
     val title: String,
     val type: String
 )

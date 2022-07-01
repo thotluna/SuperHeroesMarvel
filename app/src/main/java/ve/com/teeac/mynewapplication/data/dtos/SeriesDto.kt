@@ -4,7 +4,7 @@ data class SeriesDto(
     val id: Int,
     val title: String,
     val description: String = "",
-    val thumbnail: Thumbnail,
+    val thumbnail: ThumbnailDto,
     val characters: Group<Item>,
     val comics: Group<Item>,
     val creators: Group<ItemXX>,
