@@ -68,7 +68,13 @@ object ItemMapper {
         }
     }
 
-    fun thumbnailToDto(dto: ThumbnailDto): Thumbnail{
+    fun thumbnailToDto(dto: ThumbnailDto?): Thumbnail{
+        if(dto == null){
+            return Thumbnail(
+                path = "",
+                extension = ""
+            )
+        }
         return Thumbnail(dto.extension, dto.path)
     }
 

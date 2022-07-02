@@ -5,8 +5,8 @@ sealed class DestinationScreen(val route: String){
     object Characters : DestinationScreen("characters_screen")
 
     object CharacterDetail : DestinationScreen("character_detail_screen"){
-        fun createRoute(id: Int = -1, name: String="", imageurl: String=""): String {
-            return route +"?id=${id}&name=${name}&imageurl=${imageurl}"
+        fun createRoute(id: Int = -1, name: String="", imageurl: String="", extension: String = ""): String {
+            return route +"?id=${id}&name=${name}&imageurl=${imageurl}&extension=${extension}"
         }
     }
 

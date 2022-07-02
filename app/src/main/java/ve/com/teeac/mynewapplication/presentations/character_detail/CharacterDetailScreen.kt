@@ -17,7 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.skydoves.landscapist.glide.GlideImage
+import timber.log.Timber
+import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.Item
 import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
@@ -34,6 +38,7 @@ fun CharacterDetailScreen(
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
+    Timber.d("////Character end: ${state.character}")
     title(state.character.name)
     isLoading(state.isLoading)
     WrapperDetails(modifier = modifier) {
@@ -48,33 +53,33 @@ fun CharacterDetailScreen(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Comics") {
+        Section(title = "Comics", isLoading = state.isLoadingComics) {
             ListItems(
                 state.character.comics,
-                onClick = {url -> navigateImage(url) }
+                onClick = { url -> navigateImage(url) }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Events") {
+        Section(title = "Events", isLoading = state.isLoadingEvents) {
             ListItems(
                 state.character.events,
-                onClick = {url -> navigateImage(url) }
+                onClick = { url -> navigateImage(url) }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Series") {
+        Section(title = "Series", isLoading = state.isLoadingSeries) {
             ListItems(
                 state.character.series,
-                onClick = {url -> navigateImage(url) }
+                onClick = { url -> navigateImage(url) }
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Stories") {
-            ListItems(
-                state.character.stories,
-                onClick = {url -> navigateImage(url) }
-            )
-        }
+//        Spacer(modifier = Modifier.height(16.dp))
+//        Section(title = "Stories", isLoading = state.isLoadingStories) {
+//            ListItems(
+//                state.character.stories,
+//                onClick = { url -> navigateImage(url) }
+//            )
+//        }
     }
 }
 
@@ -163,6 +168,10 @@ private fun Image(
 ) {
     GlideImage(
         imageModel = imageUrl,
+        requestOptions = {
+            RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+        },
         modifier = Modifier
             .aspectRatio(.7f)
             .then(modifier),
@@ -182,6 +191,7 @@ private fun Image(
 fun Section(
     title: String,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
@@ -189,7 +199,27 @@ fun Section(
 
             .then(modifier)
     ) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Row(modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                textAlign = TextAlign.Start
+            )
+            if(isLoading){
+                Box(modifier = Modifier.fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.CenterEnd){
+                    LoadingAnimation(
+                        circleSize = 7.dp,
+                        travelDistance = 14.dp
+                    )
+                }
+            }
+        }
         HorizontalLine()
         Spacer(modifier = Modifier.height(4.dp))
         content()
@@ -215,7 +245,7 @@ private fun ListItems(
                     ItemComic(
                         url = it.getUrl(),
                         title = item.title,
-                        onClick = {url -> onClick(url)}
+                        onClick = { url -> onClick(url) }
                     )
                 }
             }

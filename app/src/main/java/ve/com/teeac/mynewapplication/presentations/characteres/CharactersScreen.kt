@@ -39,7 +39,7 @@ import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 fun CharactersScreen(
     modifier: Modifier = Modifier,
     viewModel: CharactersViewModel = hiltViewModel(),
-    goCharacterDetails: (Int, String, String) -> Unit,
+    goCharacterDetails: (Int, String, String, String) -> Unit,
     title: (String) -> Unit,
     isLoading: (Boolean) -> Unit
 ) {
@@ -77,8 +77,8 @@ fun CharactersScreen(
                 isLoading = state.isLoading,
                 state = gridState,
                 loadCharacters = { viewModel.onEvent(CharactersEvent.LoadCharactersEvent) },
-                navigateToDetails = { id, name, url ->
-                    goCharacterDetails(id, name, url)
+                navigateToDetails = { id, name, path, ext ->
+                    goCharacterDetails(id, name, path, ext)
                 }
             )
         }
@@ -92,7 +92,7 @@ private fun CharactersList(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     loadCharacters: () -> Unit,
-    navigateToDetails: (Int, String, String) -> Unit
+    navigateToDetails: (Int, String, String, String) -> Unit
 ) {
 
     LazyVerticalGrid(
@@ -110,8 +110,8 @@ private fun CharactersList(
             }
             CharacterCard(
                 character = list[index],
-                onClick = { id, name, url ->
-                    navigateToDetails(id, name, url)
+                onClick = { id, name, path, ext ->
+                    navigateToDetails(id, name, path, ext)
                 }
             )
         }
@@ -123,7 +123,7 @@ private fun CharactersList(
 fun CharacterCard(
     character: CharacterItem,
     modifier: Modifier = Modifier,
-    onClick: (Int, String, String) -> Unit
+    onClick: (Int, String, String, String) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -132,7 +132,8 @@ fun CharacterCard(
                 onClick(
                     character.id,
                     character.name,
-                    character.thumbnail.getUrl()
+                    character.thumbnail.path,
+                    character.thumbnail.extension
                 )
             }
             .then(modifier),
@@ -152,13 +153,9 @@ fun CharacterCard(
         ) {
             GlideImage(
                 imageModel = "${character.thumbnail.path}/portrait_xlarge.${character.thumbnail.extension}",
-                requestBuilder = {
-                    Glide
-                        .with(LocalContext.current)
-                        .asDrawable()
-                        .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
-                        .thumbnail(0.6f)
-                        .transition(DrawableTransitionOptions.withCrossFade())
+                requestOptions = {
+                    RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                 },
                 modifier = modifier
                     .aspectRatio(.7f),

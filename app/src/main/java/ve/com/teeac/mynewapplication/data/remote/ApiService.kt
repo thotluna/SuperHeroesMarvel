@@ -41,9 +41,9 @@ interface ApiService {
         @Path("id") id: Int
     ): DataWrapper<SeriesDto>
 
-    @GET("characters/{id}/stories")
-    suspend fun getStoriesByCharacterId(
-        @Path("id") id: Int
-    ): DataWrapper<StoryDto>
+//    @GET("characters/{id}/stories")
+//    suspend fun getStoriesByCharacterId(
+//        @Path("id") id: Int
+//    ): DataWrapper<StoryDto>
 
 }

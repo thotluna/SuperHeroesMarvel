@@ -16,7 +16,7 @@ interface CharactersRepository{
 
     suspend fun getSeriesByCharacterId(id: Int): List<Item>
 
-    suspend fun getStoriesByCharacterId(id: Int): List<Item>
+//    suspend fun getStoriesByCharacterId(id: Int): List<Item>
 
-    suspend fun getCharacter(id: Int): Character
+//    suspend fun getCharacter(id: Int): Character
 }

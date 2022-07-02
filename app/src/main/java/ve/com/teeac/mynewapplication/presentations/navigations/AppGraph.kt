@@ -28,16 +28,16 @@ fun AppGraph(
         composable(DestinationScreen.Characters.route) {
             CharactersScreen(
                 modifier = modifier,
-                goCharacterDetails = { id, name, url ->
+                goCharacterDetails = { id, name, path, ext ->
                     navController.navigate(
-                        DestinationScreen.CharacterDetail.createRoute(id, name, url)
+                        DestinationScreen.CharacterDetail.createRoute(id, name, path, ext)
                     )
                 },
                 title = { title(it) },
                 isLoading = { isLoading(it) }
             )
         }
-        composable(DestinationScreen.CharacterDetail.route + "?id={id}&name={name}&imageurl={imageurl}",
+        composable(DestinationScreen.CharacterDetail.route + "?id={id}&name={name}&imageurl={imageurl}&extension={extension}",
             arguments = listOf(
                 navArgument(name = "id") {
                     type = NavType.IntType
@@ -48,6 +48,10 @@ fun AppGraph(
                     nullable = false
                 },
                 navArgument(name = "imageurl"){
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument(name = "extension"){
                     type = NavType.StringType
                     nullable = false
                 }
