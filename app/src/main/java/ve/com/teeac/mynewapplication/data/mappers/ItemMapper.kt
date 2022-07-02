@@ -1,6 +1,5 @@
 package ve.com.teeac.mynewapplication.data.mappers
 
-import timber.log.Timber
 import ve.com.teeac.mynewapplication.data.dtos.*
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.domain.models.Item
@@ -49,19 +48,6 @@ object ItemMapper {
                 title = dto.title,
                 description = dto.description,
                 thumbnail = dto.thumbnail?.let { thumbnailToDto(it) }
-            )
-        }catch (e: Exception){
-            throw e
-        }
-    }
-
-    fun storyToDto(dto: StoryDto): Item{
-        try {
-            return Item(
-                id = dto.id,
-                title = dto.title,
-                description = dto.description,
-                thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
             throw e

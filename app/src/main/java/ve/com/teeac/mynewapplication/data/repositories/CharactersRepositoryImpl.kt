@@ -1,12 +1,10 @@
 package ve.com.teeac.mynewapplication.data.repositories
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import timber.log.Timber
-import ve.com.teeac.mynewapplication.data.remote.ApiService
 import ve.com.teeac.mynewapplication.data.mappers.ItemMapper
 import ve.com.teeac.mynewapplication.data.mappers.ModelsMapper
+import ve.com.teeac.mynewapplication.data.remote.ApiService
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.domain.models.Item
@@ -65,54 +63,4 @@ constructor(private val service: ApiService) : CharactersRepository {
                 }
         }
     }
-
-//    override suspend fun getStoriesByCharacterId(id: Int): List<Item> {
-//        Timber.d("////// getStoriesByCharacterId")
-//        return withContext(Dispatchers.IO) {
-//            service.getStoriesByCharacterId(id)
-//                .data.results.map { dto ->
-//                    ItemMapper.storyToDto(dto)
-//                }
-//        }
-//    }
-
-//    override suspend fun getCharacter(id: Int): Character {
-//        return withContext(Dispatchers.IO) {
-//            val characterDeferred = async { service.getCharacterById(id) }
-//            val comicDeferred = async { service.getComicByCharacterId(id) }
-//            val eventsDeferred = async { service.getEventsByCharacterId(id) }
-//            val seriesDeferred = async { service.getSeriesByCharacterId(id) }
-//            val storiesDeferred = async { service.getStoriesByCharacterId(id) }
-//
-//            val characterDto = characterDeferred.await().data.results.first()
-//            val comicDto = comicDeferred.await().data.results
-//            val eventsDto = eventsDeferred.await().data.results
-//            val seriesDto = seriesDeferred.await().data.results
-//            val storiesDto = storiesDeferred.await().data.results
-//
-//
-//            return@withContext ModelsMapper.characterDtoToCharacter(characterDto).copy(
-//                comics = if (comicDto.isNotEmpty()) {
-//                    comicDto.map { ItemMapper.comicToDto(it) }
-//                } else {
-//                    emptyList()
-//                },
-//                events = if (eventsDto.isNotEmpty()) {
-//                    eventsDto.map { ItemMapper.eventToDto(it) }
-//                } else {
-//                    emptyList()
-//                },
-//                series = if (seriesDto.isNotEmpty()) {
-//                    seriesDto.map { ItemMapper.seriesToDto(it) }
-//                } else {
-//                    emptyList()
-//                },
-//                stories = if(storiesDto.isNotEmpty()){
-//                    storiesDto.map { ItemMapper.storyToDto(it) }
-//                }else{
-//                    emptyList()
-//                }
-//            )
-//        }
-//    }
 }

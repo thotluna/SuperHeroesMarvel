@@ -5,11 +5,4 @@ data class CharacterDto(
     val name: String,
     val description: String,
     val thumbnail: ThumbnailDto,
-//    val comics: Group<Item>,
-//    val events: Group<Item>,
-//    val modified: String,
-//    val resourceURI: String,
-//    val series: Group<Item>,
-//    val stories: Group<ItemXXX>,
-//    val urls: List<Url>
 )

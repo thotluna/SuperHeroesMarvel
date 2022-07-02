@@ -15,7 +15,6 @@ constructor(private val repository: CharactersRepository) {
         emit(Response.Loading())
         try {
             val character = repository.getCharacterById(id)
-            Timber.d("//////CharacterRepositoryReturn: $character")
             emit(Response.Success( character ))
         } catch (e: Exception) {
             emit(Response.Error(e.message ?: "Error: ${e.printStackTrace()}"))
