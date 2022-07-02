@@ -20,12 +20,12 @@ constructor(private val service: ApiService) : CharactersRepository {
         return withContext(Dispatchers.IO) {
             if(nameStartsWith.isEmpty()) {
                 service.getCharacters(offset = offset.toString())
-                    .data.results.filter{it.thumbnail.path.isNotBlank()}.map { dto ->
+                    .data.results.filter{!it.thumbnail.path.contains("image_not_available")}.map { dto ->
                         ItemMapper.characterDtoToCharacterItem(dto)
                     }
             } else {
                 service.getCharactersByStartName(offset = offset.toString(), nameStartsWith = nameStartsWith)
-                    .data.results.filter{it.thumbnail.path.isNotBlank()}.map { characterDto ->
+                    .data.results.filter{!it.thumbnail.path.contains("image_not_available")}.map { characterDto ->
                         ItemMapper.characterDtoToCharacterItem(characterDto)
                     }
             }
