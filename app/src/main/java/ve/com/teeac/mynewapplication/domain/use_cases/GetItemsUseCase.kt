@@ -13,10 +13,10 @@ constructor(
     private val repository: CharactersRepository
 ){
 
-    operator fun invoke(id: Int, type: TypeItem): Flow<Response<List<Item>>> = flow{
+    operator fun invoke(id: Int, offset: Int = 0, type: TypeItem): Flow<Response<List<Item>>> = flow{
         emit(Response.Loading())
         try {
-            val items = getItems(id, type)
+            val items = getItems(id, offset, type)
             emit(Response.Success( items ))
         } catch (e: Exception) {
             Timber.e(e)
@@ -24,12 +24,11 @@ constructor(
         }
     }
 
-    private suspend fun getItems(id: Int, type: TypeItem ): List<Item>{
+    private suspend fun getItems(id: Int, offset: Int, type: TypeItem ): List<Item>{
         return when(type){
-            TypeItem.COMICS -> repository.getComicByCharacterId(id)
-            TypeItem.SERIES -> repository.getSeriesByCharacterId(id)
-//            TypeItem.STORIES -> repository.getStoriesByCharacterId(id)
-            TypeItem.EVENTS -> repository.getEventsByCharacterId(id)
+            TypeItem.COMICS -> repository.getComicByCharacterId(id, offset)
+            TypeItem.SERIES -> repository.getSeriesByCharacterId(id, offset)
+            TypeItem.EVENTS -> repository.getEventsByCharacterId(id, offset)
         }
     }
 }
@@ -38,5 +37,4 @@ sealed class TypeItem{
     object COMICS: TypeItem()
     object EVENTS: TypeItem()
     object SERIES: TypeItem()
-//    object STORIES: TypeItem()
 }

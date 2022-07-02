@@ -37,27 +37,27 @@ constructor(private val service: ApiService) : CharactersRepository {
         }
     }
 
-    override suspend fun getComicByCharacterId(id: Int): List<Item> {
+    override suspend fun getComicByCharacterId(id: Int, offset: Int): List<Item> {
         return withContext(Dispatchers.IO) {
-            service.getComicByCharacterId(id)
+            service.getComicByCharacterId(id, offset.toString())
                 .data.results.map { dto ->
                     ItemMapper.comicToDto(dto)
                 }
         }
     }
 
-    override suspend fun getEventsByCharacterId(id: Int): List<Item> {
+    override suspend fun getEventsByCharacterId(id: Int, offset: Int): List<Item> {
         return withContext(Dispatchers.IO) {
-            service.getEventsByCharacterId(id)
+            service.getEventsByCharacterId(id, offset.toString())
                 .data.results.map { dto ->
                     ItemMapper.eventToDto(dto)
                 }
         }
     }
 
-    override suspend fun getSeriesByCharacterId(id: Int): List<Item> {
+    override suspend fun getSeriesByCharacterId(id: Int, offset: Int): List<Item> {
         return withContext(Dispatchers.IO) {
-            service.getSeriesByCharacterId(id)
+            service.getSeriesByCharacterId(id, offset.toString())
                 .data.results.map { dto ->
                     ItemMapper.seriesToDto(dto)
                 }

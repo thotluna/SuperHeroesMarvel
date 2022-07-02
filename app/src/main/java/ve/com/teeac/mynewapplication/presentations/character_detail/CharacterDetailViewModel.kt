@@ -31,7 +31,6 @@ constructor(
     private var jobComics: Job? = null
     private var jobEvents: Job? = null
     private var jobSeries: Job? = null
-//    private var jobStories: Job? = null
 
     private var _state by mutableStateOf(CharacterDetailState())
     val state: CharacterDetailState
@@ -61,82 +60,9 @@ constructor(
 
     private fun getAll() {
         getCharacter()
-//        getStories()
         getComics()
         getEvents()
         getSeries()
-    }
-
-    private fun getComics() {
-        jobComics?.cancel()
-        jobComics = useCaseItems(state.id, TypeItem.COMICS).onEach {
-            _state = when (it) {
-                is Response.Loading -> state.copy(isLoadingComics = true)
-                is Response.Success -> state.copy(
-                    character = state.character.copy(comics = it.data!!),
-                    isLoadingComics = false
-                )
-                is Response.Error -> state.copy(isLoadingComics = false, error = it.message)
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getEvents() {
-        jobEvents?.cancel()
-        jobEvents = useCaseItems(state.id, TypeItem.EVENTS).onEach {
-            _state = when (it) {
-                is Response.Loading -> state.copy(isLoadingEvents = true)
-                is Response.Success -> state.copy(
-                    character = state.character.copy(events = it.data!!),
-                    isLoadingEvents = false
-                )
-                is Response.Error -> state.copy(isLoadingEvents = false, error = it.message)
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getSeries() {
-        jobSeries?.cancel()
-        jobSeries = useCaseItems(state.id, TypeItem.SERIES).onEach {
-            _state = when (it) {
-                is Response.Loading -> state.copy(isLoadingSeries = true)
-                is Response.Success -> state.copy(
-                    character = state.character.copy(series = it.data!!),
-                    isLoadingSeries = false
-                )
-                is Response.Error -> state.copy(isLoadingSeries = false, error = it.message)
-            }
-        }.launchIn(viewModelScope)
-    }
-
-//    private fun getStories() {
-//        jobStories?.cancel()
-//        jobStories = useCaseItems(state.id, TypeItem.STORIES).onEach {
-//            _state = when (it) {
-//                is Response.Loading -> state.copy(isLoadingStories = true)
-//                is Response.Success -> state.copy(
-//                    character = state.character.copy(stories = it.data!!),
-//                    isLoadingStories = false
-//                )
-//                is Response.Error -> state.copy(isLoadingStories = false, error = it.message)
-//            }
-//        }.launchIn(viewModelScope)
-//    }
-
-
-    fun onEvent(event: CharacterDetailEvent) {
-        when (event) {
-            is CharacterDetailEvent.LoadCharactersEvent -> loadCharacter()
-            is CharacterDetailEvent.Refresh -> refresh()
-        }
-    }
-
-    private fun refresh() {
-        getCharacter()
-    }
-
-    private fun loadCharacter() {
-        getCharacter()
     }
 
     private fun getCharacter() {
@@ -149,5 +75,62 @@ constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+    private fun getComics() {
+        jobComics?.cancel()
+        jobComics = useCaseItems(state.id, state.character.comics.size, TypeItem.COMICS).onEach {
+            _state = when (it) {
+                is Response.Loading -> state.copy(isLoadingComics = true)
+                is Response.Success -> state.copy(
+                    character = state.character.copy(comics = state.character.comics + it.data!!),
+                    isLoadingComics = false
+                )
+                is Response.Error -> state.copy(isLoadingComics = false, error = it.message)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getEvents() {
+        jobEvents?.cancel()
+        jobEvents = useCaseItems(state.id, state.character.events.size, TypeItem.EVENTS).onEach {
+            _state = when (it) {
+                is Response.Loading -> state.copy(isLoadingEvents = true)
+                is Response.Success -> state.copy(
+                    character = state.character.copy(events = state.character.events + it.data!!),
+                    isLoadingEvents = false
+                )
+                is Response.Error -> state.copy(isLoadingEvents = false, error = it.message)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getSeries() {
+        jobSeries?.cancel()
+        jobSeries = useCaseItems(state.id, state.character.series.size, TypeItem.SERIES).onEach {
+            _state = when (it) {
+                is Response.Loading -> state.copy(isLoadingSeries = true)
+                is Response.Success -> state.copy(
+                    character = state.character.copy(series = state.character.series + it.data!!),
+                    isLoadingSeries = false
+                )
+                is Response.Error -> state.copy(isLoadingSeries = false, error = it.message)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun onEvent(event: CharacterDetailEvent) {
+        when (event) {
+            is CharacterDetailEvent.Refresh -> refresh()
+            is CharacterDetailEvent.LoadComics -> getComics()
+            is CharacterDetailEvent.LoadSeries -> getSeries()
+            is CharacterDetailEvent.LoadEvents -> getEvents()
+        }
+    }
+
+    private fun refresh() {
+        getAll()
+    }
+
+
 
 }

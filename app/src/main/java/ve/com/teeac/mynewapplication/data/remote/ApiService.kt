@@ -28,17 +28,23 @@ interface ApiService {
 
     @GET("characters/{id}/comics")
     suspend fun getComicByCharacterId(
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Query("offset") offset: String = "0",
+        @Query("limit") limit: String = "6"
     ): DataWrapper<ComicDto>
 
     @GET("characters/{id}/events")
     suspend fun getEventsByCharacterId(
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Query("offset") offset: String = "0",
+        @Query("limit") limit: String = "6"
     ): DataWrapper<EventDto>
 
     @GET("characters/{id}/series")
     suspend fun getSeriesByCharacterId(
-        @Path("id") id: Int
+        @Path("id") id: Int,
+        @Query("offset") offset: String = "0",
+        @Query("limit") limit: String = "6"
     ): DataWrapper<SeriesDto>
 
 

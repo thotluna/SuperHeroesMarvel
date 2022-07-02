@@ -10,13 +10,10 @@ interface CharactersRepository{
 
     suspend fun getCharacterById(id: Int): Character
 
-    suspend fun getComicByCharacterId(id: Int): List<Item>
+    suspend fun getComicByCharacterId(id: Int, offset: Int = 0): List<Item>
 
-    suspend fun getEventsByCharacterId(id: Int): List<Item>
+    suspend fun getEventsByCharacterId(id: Int, offset: Int = 0): List<Item>
 
-    suspend fun getSeriesByCharacterId(id: Int): List<Item>
+    suspend fun getSeriesByCharacterId(id: Int, offset: Int = 0): List<Item>
 
-//    suspend fun getStoriesByCharacterId(id: Int): List<Item>
-
-//    suspend fun getCharacter(id: Int): Character
 }

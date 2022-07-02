@@ -3,7 +3,6 @@ package ve.com.teeac.mynewapplication.presentations.character_detail
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
 import ve.com.teeac.mynewapplication.R
 import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
@@ -36,44 +37,52 @@ fun CharacterDetailScreen(
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isRefresh)
     title(state.character.name)
     isLoading(state.isLoading)
-    WrapperDetails(modifier = modifier) {
-        Header(state.character)
-        Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Description") {
-            if (state.character.description.isNotEmpty()) {
-                Text(
-                    text = state.character.description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            } else {
-                NotHaveItem(text = "Does not descriptions")
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = { viewModel.onEvent(CharacterDetailEvent.Refresh) }) {
+        WrapperDetails(modifier = modifier) {
+            Header(state.character)
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Description") {
+                if (state.character.description.isNotEmpty()) {
+                    Text(
+                        text = state.character.description,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    NotHaveItem(text = "Does not descriptions")
+                }
             }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Comics", isLoading = state.isLoadingComics) {
-            ListItems(
-                state.character.comics,
-                isLoading = state.isLoadingComics,
-                onClick = { url -> navigateImage(url) }
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Events", isLoading = state.isLoadingEvents) {
-            ListItems(
-                state.character.events,
-                isLoading = state.isLoadingEvents,
-                onClick = { url -> navigateImage(url) }
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Section(title = "Series", isLoading = state.isLoadingSeries) {
-            ListItems(
-                state.character.series,
-                isLoading = state.isLoadingSeries,
-                onClick = { url -> navigateImage(url) }
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Comics", isLoading = state.isLoadingComics) {
+                ListItems(
+                    state.character.comics,
+                    isLoading = state.isLoadingComics,
+                    onClick = { url -> navigateImage(url) },
+                    onGetItems = { viewModel.onEvent(CharacterDetailEvent.LoadComics) }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Events", isLoading = state.isLoadingEvents) {
+                ListItems(
+                    state.character.events,
+                    isLoading = state.isLoadingEvents,
+                    onClick = { url -> navigateImage(url) },
+                    onGetItems = { viewModel.onEvent(CharacterDetailEvent.LoadEvents) }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Section(title = "Series", isLoading = state.isLoadingSeries) {
+                ListItems(
+                    state.character.series,
+                    isLoading = state.isLoadingSeries,
+                    onClick = { url -> navigateImage(url) },
+                    onGetItems = { viewModel.onEvent(CharacterDetailEvent.LoadSeries) }
+                )
+            }
         }
     }
 }
@@ -233,6 +242,7 @@ fun Section(
 private fun ListItems(
     listItems: List<Item>,
     isLoading: Boolean = false,
+    onGetItems: () -> Unit,
     onClick: (String) -> Unit = {}
 ) {
     if (listItems.isNotEmpty()) {
@@ -241,11 +251,16 @@ private fun ListItems(
                 .width(400.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(listItems) { item ->
-                item.thumbnail?.let {
+            items(listItems.size) { index ->
+
+                if (index >= listItems.size - 4 && index < listItems.size && !isLoading) {
+                    onGetItems()
+                }
+
+                listItems[index].thumbnail?.let {
                     ItemComic(
                         url = it.getUrl(),
-                        title = item.title,
+                        title = listItems[index].title,
                         onClick = { url -> onClick(url) }
                     )
                 }
