@@ -38,7 +38,6 @@ constructor(
         val thumbnail = imageUrl?.let {
             Thumbnail(imageUrl[1],"${ imageUrl[0] }portrait_xlarge" )
         }?: Thumbnail("","")
-        Timber.d("thumbnail: $thumbnail, $imageUrl")
         val newCharacter = Character(id, name, thumbnail, "", emptyList(), emptyList(), emptyList(), emptyList())
 
         _state = state.copy(
@@ -67,13 +66,11 @@ constructor(
     private fun getCharacter(id: Int) {
        job?.cancel()
        job = useCase(id).onEach {
-           Timber.d("Intro of getCharacter - Character for UseCase:")
            _state = when(it){
                is Response.Loading -> state.copy(isLoading = true)
                is Response.Success -> state.copy(isLoading = false, character = it.data!!)
                is Response.Error -> state.copy(isLoading = false, error = it.message)
            }
-           Timber.d("Intro of getCharacter - Character for UseCase: $state, $it")
        }.launchIn(viewModelScope)
     }
 

@@ -2,7 +2,6 @@ package ve.com.teeac.mynewapplication.data.mappers
 
 import ve.com.teeac.mynewapplication.data.dtos.CharacterDto
 import ve.com.teeac.mynewapplication.domain.models.Character
-import ve.com.teeac.mynewapplication.domain.models.Thumbnail
 
 object ModelsMapper {
 

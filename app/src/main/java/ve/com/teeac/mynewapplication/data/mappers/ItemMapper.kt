@@ -25,7 +25,6 @@ object ItemMapper {
                 thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
-            Timber.e("Error in comic to dto")
             throw e
         }
     }
@@ -39,7 +38,6 @@ object ItemMapper {
                 thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
-            Timber.e("Error in series to dto")
             throw e
         }
     }
@@ -53,7 +51,6 @@ object ItemMapper {
                 thumbnail = dto.thumbnail?.let { thumbnailToDto(it) }
             )
         }catch (e: Exception){
-            Timber.e("Error in event to dto")
             throw e
         }
     }
@@ -67,7 +64,6 @@ object ItemMapper {
                 thumbnail = thumbnailToDto(dto.thumbnail)
             )
         }catch (e: Exception){
-            Timber.e("Error in story to dto")
             throw e
         }
     }

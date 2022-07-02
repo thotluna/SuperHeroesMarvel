@@ -20,12 +20,12 @@ constructor(private val service: ApiService) : CharactersRepository {
         return withContext(Dispatchers.IO) {
             if(nameStartsWith.isEmpty()) {
                 service.getCharacters(offset = offset.toString())
-                    .data.results.map { dto ->
+                    .data.results.filter{it.thumbnail.path.isNotBlank()}.map { dto ->
                         ItemMapper.characterDtoToCharacterItem(dto)
                     }
             } else {
                 service.getCharactersByStartName(offset = offset.toString(), nameStartsWith = nameStartsWith)
-                    .data.results.map { characterDto ->
+                    .data.results.filter{it.thumbnail.path.isNotBlank()}.map { characterDto ->
                         ItemMapper.characterDtoToCharacterItem(characterDto)
                     }
             }
@@ -58,7 +58,6 @@ constructor(private val service: ApiService) : CharactersRepository {
     }
 
     override suspend fun getSeriesByCharacterId(id: Int): List<Item> {
-        Timber.d("Character: series")
         return withContext(Dispatchers.IO) {
             service.getSeriesByCharacterId(id)
                 .data.results.map { dto ->
@@ -68,7 +67,6 @@ constructor(private val service: ApiService) : CharactersRepository {
     }
 
     override suspend fun getStoriesByCharacterId(id: Int): List<Item> {
-        Timber.d("Character: stories")
         return withContext(Dispatchers.IO) {
             service.getStoriesByCharacterId(id)
                 .data.results.map { dto ->
