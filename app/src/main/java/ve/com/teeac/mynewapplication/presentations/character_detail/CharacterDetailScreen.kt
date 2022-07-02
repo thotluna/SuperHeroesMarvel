@@ -1,18 +1,16 @@
 package ve.com.teeac.mynewapplication.presentations.character_detail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -20,7 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.skydoves.landscapist.glide.GlideImage
-import timber.log.Timber
+import ve.com.teeac.mynewapplication.R
 import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.Item
@@ -38,24 +36,26 @@ fun CharacterDetailScreen(
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    Timber.d("////Character end: ${state.character}")
     title(state.character.name)
     isLoading(state.isLoading)
     WrapperDetails(modifier = modifier) {
         Header(state.character)
         Spacer(modifier = Modifier.height(16.dp))
         Section(title = "Description") {
-            Text(
-                text = state.character.description.ifBlank {
-                    "Does not descriptions"
-                },
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (state.character.description.isNotEmpty()) {
+                Text(
+                    text = state.character.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                NotHaveItem(text = "Does not descriptions")
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Section(title = "Comics", isLoading = state.isLoadingComics) {
             ListItems(
                 state.character.comics,
+                isLoading = state.isLoadingComics,
                 onClick = { url -> navigateImage(url) }
             )
         }
@@ -63,6 +63,7 @@ fun CharacterDetailScreen(
         Section(title = "Events", isLoading = state.isLoadingEvents) {
             ListItems(
                 state.character.events,
+                isLoading = state.isLoadingEvents,
                 onClick = { url -> navigateImage(url) }
             )
         }
@@ -70,16 +71,10 @@ fun CharacterDetailScreen(
         Section(title = "Series", isLoading = state.isLoadingSeries) {
             ListItems(
                 state.character.series,
+                isLoading = state.isLoadingSeries,
                 onClick = { url -> navigateImage(url) }
             )
         }
-//        Spacer(modifier = Modifier.height(16.dp))
-//        Section(title = "Stories", isLoading = state.isLoadingStories) {
-//            ListItems(
-//                state.character.stories,
-//                onClick = { url -> navigateImage(url) }
-//            )
-//        }
     }
 }
 
@@ -126,7 +121,7 @@ private fun Header(character: Character) {
                 .fillMaxWidth(1f)
                 .height(IntrinsicSize.Max)
         ) {
-            Image(
+            ImageByUrl(
                 imageUrl = character.thumbnail.getUrl(),
                 modifier = Modifier.weight(1f)
             )
@@ -162,7 +157,7 @@ fun HorizontalLine(height: Dp = 4.dp) {
 }
 
 @Composable
-private fun Image(
+private fun ImageByUrl(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
@@ -199,8 +194,10 @@ fun Section(
 
             .then(modifier)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
@@ -209,10 +206,13 @@ fun Section(
                     .weight(1f),
                 textAlign = TextAlign.Start
             )
-            if(isLoading){
-                Box(modifier = Modifier.fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.CenterEnd){
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
                     LoadingAnimation(
                         circleSize = 7.dp,
                         travelDistance = 14.dp
@@ -232,6 +232,7 @@ fun Section(
 @Composable
 private fun ListItems(
     listItems: List<Item>,
+    isLoading: Boolean = false,
     onClick: (String) -> Unit = {}
 ) {
     if (listItems.isNotEmpty()) {
@@ -249,6 +250,39 @@ private fun ListItems(
                     )
                 }
             }
+        }
+    }
+    if (listItems.isEmpty() && !isLoading) {
+        NotHaveItem(text = "Does not have items")
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+private fun NotHaveItem(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    CardWrapper {
+        Row(
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
+                .then(modifier),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = null,
+                modifier = Modifier.width(100.dp),
+                contentScale = ContentScale.FillWidth
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
+            )
         }
     }
 }
@@ -273,7 +307,7 @@ fun ItemComic(
                 .width(150.dp)
                 .height(225.dp)
         ) {
-            Image(imageUrl = url)
+            ImageByUrl(imageUrl = url)
         }
         HorizontalLine()
         Box(
