@@ -9,8 +9,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ve.com.teeac.mynewapplication.domain.use_cases.GetCharactersUseCase
-import ve.com.teeac.mynewapplication.utils.Constants
+import timber.log.Timber
+import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacters
 import ve.com.teeac.mynewapplication.utils.Response
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class CharactersViewModel
 @Inject
 constructor(
-    private val useCase: GetCharactersUseCase
+    private val useCase: GetCharacters
 ) : ViewModel() {
 
     private var _state by mutableStateOf(CharactersState())
@@ -28,65 +28,51 @@ constructor(
     private var job: Job? = null
 
     init {
-        getCharacters()
-
+//        getCharacters()
     }
 
     fun onEvent(event: CharactersEvent) {
         when (event) {
-            is CharactersEvent.LoadCharactersEvent -> {
-                _state = state.copy(offset = state.offset + Constants.limit.toInt())
-                getCharacters()
-            }
-            is CharactersEvent.Refresh -> {
-                _state = state.copy(offset = 0)
-                getCharacters()
-            }
+            is CharactersEvent.LoadCharactersEvent -> { getCharacters() }
+            is CharactersEvent.Refresh -> { getCharacters(forceUpdate = true) }
             is CharactersEvent.ChangeNameStart -> {
                 _state = state.copy(
                     nameStartsWith = event.name,
-                    offset = 0,
                     characters = emptyList()
                 )
-                if (event.name.isNotEmpty()) {
+                if (event.name.isNotEmpty() && event.name.length >= 3) {
                     getCharacters()
                 }
             }
         }
     }
 
-    private fun getCharacters() {
+    private fun getCharacters(forceUpdate: Boolean = false) {
+        Timber.d("---Load ViewModel---")
         job?.cancel()
-        job = useCase(state.offset, state.nameStartsWith).onEach {
-            when (it) {
+        job = useCase(nameStartsWith = state.nameStartsWith, forceUpdate = forceUpdate).onEach {
+            _state = when (it) {
                 is Response.Loading -> {
-                    _state = _state.copy(
-                        isLoading = true
-                    )
+                    _state.copy(isLoading = true)
                 }
-
                 is Response.Success -> {
-                    _state = if(it.data != null) {
-                                _state.copy(
-                                    isLoading = false,
-                                    characters = state.characters + it.data
-                                )
-                            }else{
-                                _state.copy(
-                                    isLoading = false,
-                                    characters = emptyList()
-                                )
-                            }
+                    if (it.data != null) {
+                        _state.copy(isLoading = false, characters = state.characters + it.data)
+                    } else {
+                        _state.copy(isLoading = false, characters = emptyList())
+                    }
                 }
-
                 is Response.Error -> {
-                    _state = _state.copy(
-                        isLoading = false,
-                        error = it.message ?: "Error"
-                    )
+                    _state.copy(isLoading = false, error = it.message ?: "Error")
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
+
     }
 
 }

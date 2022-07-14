@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -252,9 +254,10 @@ private fun ListItems(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(listItems.size) { index ->
-
-                if (index >= listItems.size - 4 && index < listItems.size && !isLoading) {
+                val call = rememberSaveable { mutableStateOf(0)}
+                if (index == listItems.size - 4 && call.value != index && !isLoading) {
                     onGetItems()
+                    call.value = index
                 }
 
                 listItems[index].thumbnail?.let {

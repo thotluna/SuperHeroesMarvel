@@ -33,7 +33,6 @@ fun LoadingAnimation(
         remember{ Animatable(initialValue = 0f) },
         remember{ Animatable(initialValue = 0f) },
     )
-
     circles.forEachIndexed { index, animatable ->
         LaunchedEffect(key1 = animatable){
             delay(index * 100L)
@@ -76,8 +75,8 @@ fun LoadingAnimation(
 
 }
 
-@Preview
-@Composable
-private fun LoadingAnimationPreview() {
-    LoadingAnimation()
-}
+//@Preview
+//@Composable
+//private fun LoadingAnimationPreview() {
+//    LoadingAnimation()
+//}

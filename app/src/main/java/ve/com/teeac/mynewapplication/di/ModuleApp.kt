@@ -1,15 +1,16 @@
 package ve.com.teeac.mynewapplication.di
 
+import android.app.Application
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ve.com.teeac.mynewapplication.data.local.AppDatabase
 import ve.com.teeac.mynewapplication.data.remote.ApiService
 import ve.com.teeac.mynewapplication.data.remote.apiClient
-import ve.com.teeac.mynewapplication.data.repositories.CharactersRepositoryImpl
-import ve.com.teeac.mynewapplication.domain.repositories.CharactersRepository
 import ve.com.teeac.mynewapplication.utils.Constants
 import javax.inject.Singleton
 
@@ -28,9 +29,18 @@ object ModuleApp {
             .create(ApiService::class.java)
     }
 
-    @Singleton
     @Provides
-    fun providerChartersRepository(apiService: ApiService): CharactersRepository {
-        return CharactersRepositoryImpl(apiService)
+    @Singleton
+    fun provideDatabase(app: Application): AppDatabase {
+        return Room.databaseBuilder(
+            app,
+            AppDatabase::class.java,
+            AppDatabase.DATABASE_NAME
+        ).build()
     }
+
+
+
+
+
 }

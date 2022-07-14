@@ -5,31 +5,27 @@ package ve.com.teeac.mynewapplication.presentations.characteres
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.flow.distinctUntilChanged
+import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
@@ -46,7 +42,7 @@ fun CharactersScreen(
 
     val state = viewModel.state
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isRefresh)
-    val gridState = rememberLazyGridState()
+
 
     title("Characters")
     isLoading(state.isLoading)
@@ -62,7 +58,7 @@ fun CharactersScreen(
                 .then(modifier)
         ) {
             OutlinedTextField(
-                value = state.nameStartsWith,
+                value = state.nameStartsWith ?: "",
                 onValueChange = { viewModel.onEvent(CharactersEvent.ChangeNameStart(it)) },
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
@@ -74,9 +70,9 @@ fun CharactersScreen(
             Spacer(modifier = Modifier.height(8.dp))
             CharactersList(
                 list = state.characters,
-                isLoading = state.isLoading,
-                state = gridState,
-                loadCharacters = { viewModel.onEvent(CharactersEvent.LoadCharactersEvent) },
+                loadCharacters = {
+                    viewModel.onEvent(CharactersEvent.LoadCharactersEvent)
+                },
                 navigateToDetails = { id, name, path, ext ->
                     goCharacterDetails(id, name, path, ext)
                 }
@@ -86,17 +82,43 @@ fun CharactersScreen(
 }
 
 @Composable
+fun InfiniteListHandler(
+    listState: LazyGridState,
+    buffer: Int = 2,
+    onLoadMore: () -> Unit
+) {
+    val loadMore = remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val totalItemsNumber = layoutInfo.totalItemsCount
+            val lastVisibleItemIndex = (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
+
+            (lastVisibleItemIndex / 3) > ((totalItemsNumber / 3) - buffer)
+        }
+    }
+
+    LaunchedEffect(loadMore) {
+        snapshotFlow { loadMore.value }
+            .distinctUntilChanged()
+            .collect {
+                if (it) {
+                    onLoadMore()
+                }
+            }
+    }
+}
+
+@Composable
 private fun CharactersList(
     list: List<CharacterItem>,
-    state: LazyGridState,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
     loadCharacters: () -> Unit,
     navigateToDetails: (Int, String, String, String) -> Unit
 ) {
+    val gridState = rememberLazyGridState()
 
     LazyVerticalGrid(
-        state = state,
+        state = gridState,
         columns = GridCells.Fixed(3),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -104,18 +126,16 @@ private fun CharactersList(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        items(list.size) { index ->
-            if (index >= list.size - 3 && index < list.size && !isLoading) {
-                loadCharacters()
-            }
+        items(list) { item ->
             CharacterCard(
-                character = list[index],
+                character = item,
                 onClick = { id, name, path, ext ->
                     navigateToDetails(id, name, path, ext)
                 }
             )
         }
     }
+    InfiniteListHandler(listState = gridState) { loadCharacters() }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

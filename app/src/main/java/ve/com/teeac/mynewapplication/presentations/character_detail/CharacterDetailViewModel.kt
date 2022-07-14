@@ -10,11 +10,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ve.com.teeac.mynewapplication.domain.models.Thumbnail
+import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.models.Character
-import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacterByIdUseCase
-import ve.com.teeac.mynewapplication.domain.use_cases.GetItemsUseCase
-import ve.com.teeac.mynewapplication.domain.use_cases.TypeItem
+import ve.com.teeac.mynewapplication.domain.models.Thumbnail
+import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacterById
+import ve.com.teeac.mynewapplication.domain.use_cases.GetItemsComics
+import ve.com.teeac.mynewapplication.domain.use_cases.GetItemsEvents
+import ve.com.teeac.mynewapplication.domain.use_cases.GetItemsSeries
 import ve.com.teeac.mynewapplication.utils.Response
 import javax.inject.Inject
 
@@ -22,8 +24,10 @@ import javax.inject.Inject
 class CharacterDetailViewModel
 @Inject
 constructor(
-    private val useCase: GetCharacterByIdUseCase,
-    private val useCaseItems: GetItemsUseCase,
+    private val useCase: GetCharacterById,
+    private val getComicUseCase: GetItemsComics,
+    private val getEventUseCase: GetItemsEvents,
+    private val getSeriesUseCase: GetItemsSeries,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -41,6 +45,7 @@ constructor(
             id = savedStateHandle.get<Int?>("id") ?: -1,
             character = createCharacterInitial(savedStateHandle)
         )
+        Timber.d("////Character: ${state.character}")
         getAll()
     }
 
@@ -55,14 +60,15 @@ constructor(
             } else {
                 Thumbnail("", "")
             },
-            "", emptyList(), emptyList(), emptyList(), emptyList())
+            "", emptyList(), emptyList(), emptyList(), emptyList()
+        )
     }
 
-    private fun getAll() {
+    private fun getAll(forceUpdate: Boolean = false) {
         getCharacter()
-        getComics()
-        getEvents()
-        getSeries()
+        getComics(forceUpdate)
+        getEvents(forceUpdate)
+        getSeries(forceUpdate)
     }
 
     private fun getCharacter() {
@@ -70,43 +76,51 @@ constructor(
         jobCharacter = useCase(state.id).onEach {
             _state = when (it) {
                 is Response.Loading -> state.copy(isLoading = true)
-                is Response.Success -> state.copy(isLoading = false, character = state.character.copy(description = it.data!!.description))
+                is Response.Success -> state.copy(
+                    isLoading = false,
+                    character = state.character.copy(description = it.data!!.description)
+                )
                 is Response.Error -> state.copy(isLoading = false, error = it.message)
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun getComics() {
+    private fun getComics(forceUpdate: Boolean = false) {
         jobComics?.cancel()
-        jobComics = useCaseItems(state.id, state.character.comics.size, TypeItem.COMICS).onEach {
-            _state = when (it) {
-                is Response.Loading -> state.copy(isLoadingComics = true)
-                is Response.Success -> state.copy(
-                    character = state.character.copy(comics = state.character.comics + it.data!!),
-                    isLoadingComics = false
-                )
-                is Response.Error -> state.copy(isLoadingComics = false, error = it.message)
-            }
-        }.launchIn(viewModelScope)
+        jobComics =
+            getComicUseCase(
+                id = state.id,
+                forceUpdate = forceUpdate,
+            ).onEach {
+                _state = when (it) {
+                    is Response.Loading -> state.copy(isLoadingComics = true)
+                    is Response.Success -> state.copy(
+                        character = state.character.copy(comics = state.character.comics + it.data!!),
+                        isLoadingComics = false
+                    )
+                    is Response.Error -> state.copy(isLoadingComics = false, error = it.message)
+                }
+            }.launchIn(viewModelScope)
     }
 
-    private fun getEvents() {
+    private fun getEvents(forceUpdate: Boolean = false) {
         jobEvents?.cancel()
-        jobEvents = useCaseItems(state.id, state.character.events.size, TypeItem.EVENTS).onEach {
-            _state = when (it) {
-                is Response.Loading -> state.copy(isLoadingEvents = true)
-                is Response.Success -> state.copy(
-                    character = state.character.copy(events = state.character.events + it.data!!),
-                    isLoadingEvents = false
-                )
-                is Response.Error -> state.copy(isLoadingEvents = false, error = it.message)
-            }
-        }.launchIn(viewModelScope)
+        jobEvents =
+            getEventUseCase(state.id, forceUpdate = forceUpdate).onEach {
+                _state = when (it) {
+                    is Response.Loading -> state.copy(isLoadingEvents = true)
+                    is Response.Success -> state.copy(
+                        character = state.character.copy(events = state.character.events + it.data!!),
+                        isLoadingEvents = false
+                    )
+                    is Response.Error -> state.copy(isLoadingEvents = false, error = it.message)
+                }
+            }.launchIn(viewModelScope)
     }
 
-    private fun getSeries() {
+    private fun getSeries(forceUpdate: Boolean = false) {
         jobSeries?.cancel()
-        jobSeries = useCaseItems(state.id, state.character.series.size, TypeItem.SERIES).onEach {
+        jobSeries = getSeriesUseCase(state.id, forceUpdate = forceUpdate).onEach {
             _state = when (it) {
                 is Response.Loading -> state.copy(isLoadingSeries = true)
                 is Response.Success -> state.copy(
@@ -128,9 +142,8 @@ constructor(
     }
 
     private fun refresh() {
-        getAll()
+        getAll(forceUpdate = true)
     }
-
 
 
 }

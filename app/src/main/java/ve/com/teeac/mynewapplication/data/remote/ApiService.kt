@@ -11,14 +11,15 @@ interface ApiService {
     @GET("characters")
     suspend fun getCharacters(
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = Constants.limit
+        @Query("limit") limit: String = Constants.CHARACTERS_LIMIT_REMOTE,
+        @Query("orderBy") orderBy: String = "name"
     ): DataWrapper<CharacterDto>
 
     @GET("characters")
     suspend fun getCharactersByStartName(
         @Query("nameStartsWith") nameStartsWith: String,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = Constants.limit
+        @Query("limit") limit: String = Constants.CHARACTERS_LIMIT_REMOTE
     ): DataWrapper<CharacterDto>
 
     @GET("characters/{id}")
@@ -30,22 +31,25 @@ interface ApiService {
     suspend fun getComicByCharacterId(
         @Path("id") id: Int,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = "6"
-    ): DataWrapper<ComicDto>
+        @Query("limit") limit: String = Constants.ITEMS_LIMIT,
+        @Query("orderBy") orderBy: String = "title"
+    ): DataWrapper<ItemDto>
 
     @GET("characters/{id}/events")
     suspend fun getEventsByCharacterId(
         @Path("id") id: Int,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = "6"
-    ): DataWrapper<EventDto>
+        @Query("limit") limit: String = Constants.ITEMS_LIMIT ,
+        @Query("orderBy") orderBy: String = "name"
+    ): DataWrapper<ItemDto>
 
     @GET("characters/{id}/series")
     suspend fun getSeriesByCharacterId(
         @Path("id") id: Int,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = "6"
-    ): DataWrapper<SeriesDto>
+        @Query("limit") limit: String = Constants.ITEMS_LIMIT ,
+        @Query("orderBy") orderBy: String = "title"
+    ): DataWrapper<ItemDto>
 
 
 }
