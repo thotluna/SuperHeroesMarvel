@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ve.com.teeac.mynewapplication.core.presentations.TopAppBar
+import ve.com.teeac.mynewapplication.presentations.shared.TopAppBar
 import ve.com.teeac.mynewapplication.presentations.navigations.AppGraph
 import ve.com.teeac.mynewapplication.ui.theme.MyNewApplicationTheme
 
