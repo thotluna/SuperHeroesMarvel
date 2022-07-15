@@ -22,10 +22,10 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
 import ve.com.teeac.mynewapplication.R
-import ve.com.teeac.mynewapplication.core.presentations.LoadingAnimation
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.Item
 import ve.com.teeac.mynewapplication.presentations.shared.CharacterName
+import ve.com.teeac.mynewapplication.presentations.shared.LoadingAnimation
 import ve.com.teeac.mynewapplication.ui.theme.BlackMarvel
 import ve.com.teeac.mynewapplication.ui.theme.RedMarvel
 

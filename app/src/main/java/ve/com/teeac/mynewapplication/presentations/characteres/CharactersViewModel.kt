@@ -27,10 +27,6 @@ constructor(
 
     private var job: Job? = null
 
-    init {
-//        getCharacters()
-    }
-
     fun onEvent(event: CharactersEvent) {
         when (event) {
             is CharactersEvent.LoadCharactersEvent -> { getCharacters() }
@@ -48,7 +44,6 @@ constructor(
     }
 
     private fun getCharacters(forceUpdate: Boolean = false) {
-        Timber.d("---Load ViewModel---")
         job?.cancel()
         job = useCase(nameStartsWith = state.nameStartsWith, forceUpdate = forceUpdate).onEach {
             _state = when (it) {

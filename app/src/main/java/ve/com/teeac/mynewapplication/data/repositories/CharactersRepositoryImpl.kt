@@ -30,26 +30,24 @@ constructor(
         }
         var list = local.getCharacters(nameStartsWith)
         if (list.isEmpty() || list.size < Constants.CHARACTERS_LIMIT_LOCAL.toInt()) {
-            if(list.isNotEmpty()) local.reverseLastPage()
+            if (list.isNotEmpty()) local.reverseLastPage()
             val listRemote =
                 remote.getCharacters(nameStart = nameStartsWith, forceUpdate = forceUpdate)
+            if(listRemote.isEmpty()) return emptyList()
             local.insertCharacters(listRemote)
             list = local.getCharacters(nameStartsWith)
         }
         return list.map { it.toCharacterItem() }
     }
 
-
-
-
     override suspend fun getCharacterById(id: Int): Character {
         var character = local.getCharacter(id)
-        if (character != null) {
+        if (character == null) {
             val characterRemote = remote.getCharacterById(id)
             local.insertCharacters(listOf(characterRemote))
-            character = local.getCharacter(id)
+            character = characterRemote
         }
-        return character!!.toCharacter()
+        return character.toCharacter()
     }
 
 

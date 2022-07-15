@@ -1,19 +1,18 @@
 package ve.com.teeac.mynewapplication.data.local
 
-import io.mockk.MockKAnnotations
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.confirmVerified
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import ve.com.teeac.mynewapplication.data.MotherData
 import ve.com.teeac.mynewapplication.data.dtos.ItemDto
 import ve.com.teeac.mynewapplication.data.dtos.ThumbnailDto
 import ve.com.teeac.mynewapplication.data.local.daos.ItemDao
 import ve.com.teeac.mynewapplication.domain.models.TypeItem
+import ve.com.teeac.mynewapplication.utils.Constants
 
 @ExperimentalCoroutinesApi
 class ItemsLocalDataSourceTest{
@@ -23,24 +22,6 @@ class ItemsLocalDataSourceTest{
 
     private lateinit var local: ItemsLocalDataSource
 
-    private val items = listOf(
-        ItemDto(
-            id = 1,
-            idCharacter = 1,
-            title = "title 1",
-            description = "description 1 ",
-            thumbnail = ThumbnailDto("path 1", "extension 1 ")
-        ),
-
-        ItemDto(
-            id = 2,
-            idCharacter = 1,
-            title = "title 2",
-            description = "description 2 ",
-            thumbnail = ThumbnailDto("path 2", "extension 2 ")
-        ),
-    )
-
     @Before
     fun setup(){
         MockKAnnotations.init(this)
@@ -48,41 +29,63 @@ class ItemsLocalDataSourceTest{
     }
 
     @Test
-    fun `should insert new items`(){
-        coEvery { dao.insert(items) } returns Unit
-
-        runTest {
-            local.insert(items)
+    fun `should return list items by character id and increment the offset`(){
+        val idCharacter = 1
+        val list = listOf(MotherData.oneItem, MotherData.twoItem)
+        val offset = slot<Int>()
+        coEvery {
+            dao.getByCharacterId(idCharacter, TypeItem.COMICS.name, capture(offset))
+        } coAnswers {
+            assertEquals(0, offset.captured)
+            list
+        }coAndThen {
+            assertEquals(Constants.ITEMS_LIMIT.toInt(), offset.captured)
+            emptyList()
+        }coAndThen {
+            assertEquals(Constants.ITEMS_LIMIT.toInt(), offset.captured)
+            emptyList()
         }
 
-        coVerify { dao.insert(items) }
+        runTest {
+            local.getItemsByCharacterId(idCharacter)
+            local.getItemsByCharacterId(idCharacter)
+            local.getItemsByCharacterId(idCharacter)
+        }
+
+        coVerify { dao.getByCharacterId(1, TypeItem.COMICS.name, offset = any()) }
         confirmVerified(dao)
     }
 
     @Test
-    fun `should get all items`(){
-        coEvery { dao.getByCharacterId(1, TypeItem.COMICS.name, 0) } returns items
+    fun `should refresh page and delete db items`(){
+        val idCharacter = 1
+        val list = listOf(MotherData.oneItem, MotherData.twoItem)
+        val offset = slot<Int>()
+        coEvery {
+            dao.getByCharacterId(idCharacter, TypeItem.COMICS.name, capture(offset))
+        } coAnswers {
+            assertEquals(0, offset.captured)
+            list
+        }coAndThen {
+            assertEquals(Constants.ITEMS_LIMIT.toInt(), offset.captured)
+            list
+        }coAndThen {
+            assertEquals(0, offset.captured)
+            list
+        }
+        coEvery { dao.deleteAll() } returns Unit
+        coEvery { dao.insert(list) } returns Unit
 
         runTest {
-            val result = local.getItemsByCharacterId(1)
-            assertEquals(items, result)
+            local.getItemsByCharacterId(idCharacter)
+            local.getItemsByCharacterId(idCharacter)
+            local.refreshItems(list)
+            local.getItemsByCharacterId(idCharacter)
         }
 
-        coVerify { dao.getByCharacterId(1, TypeItem.COMICS.name, offset = 0) }
+        coVerify { dao.getByCharacterId(1, TypeItem.COMICS.name, offset = any()) }
+        coVerify { dao.deleteAll() }
+        coVerify { dao.insert(list) }
         confirmVerified(dao)
     }
-
-    @Test
-    fun `should get empty list`(){
-        coEvery { dao.getByCharacterId(2, TypeItem.COMICS.name, 0) } returns emptyList()
-
-        runTest {
-            local.getItemsByCharacterId(2)
-        }
-
-        coVerify { dao.getByCharacterId(2, TypeItem.COMICS.name, offset = 0) }
-        confirmVerified(dao)
-    }
-
-
 }

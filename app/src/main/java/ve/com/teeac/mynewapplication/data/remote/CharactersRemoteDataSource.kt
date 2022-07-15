@@ -15,10 +15,8 @@ class CharactersRemoteDataSource @Inject constructor(
     private var totalRecordsApi = 0
     private var recordsObtained = 0
 
-    private val offset = (page * Constants.CHARACTERS_LIMIT_REMOTE.toInt()).toString()
-
     suspend fun getCharacterById(id:Int): CharacterDto{
-        return api.getCharacterById(id).data.results.first { !it.thumbnail.path.contains("image_") }
+        return api.getCharacterById(id).data.results.first()
     }
 
     suspend fun getCharacters(
@@ -41,29 +39,7 @@ class CharactersRemoteDataSource @Inject constructor(
         page = 0
         totalRecordsApi = 0
         recordsObtained = 0
-        updateData()
-    }
-
-    private suspend fun updateData() {
-        val dto =
-            DtoRemoteRequestHandler(
-                id = 1,
-                page = page,
-                recordsObtained = recordsObtained,
-                totalRecordsApi = totalRecordsApi
-            )
-        local.insert(dto)
-    }
-
-    private suspend fun populateProperty() {
-        if (totalRecordsApi == 0) {
-           local.getHandler()?.let{
-               page = it.page
-               totalRecordsApi = it.totalRecordsApi
-               recordsObtained = it.recordsObtained
-           }
-
-        }
+        saveHandler()
     }
 
     private suspend fun checkFull(): Boolean {
@@ -71,22 +47,46 @@ class CharactersRemoteDataSource @Inject constructor(
         return totalRecordsApi in 1..recordsObtained
     }
 
+    private suspend fun getCharactersByApi(): List<CharacterDto> {
+        val characterContent = api.getCharacters(offset = getOffset()).data
+
+        updateProperty( characterContent.total, characterContent.count)
+        return characterContent.results.filter { !it.thumbnail.path.contains("image_") }
+    }
+
     private suspend fun getCharactersByNameStart(nameStart: String): List<CharacterDto> {
         return api.getCharactersByStartName(nameStartsWith = nameStart)
             .data.results.filter { !it.thumbnail.path.contains("image_") }
     }
 
-    private suspend fun getCharactersByApi(): List<CharacterDto> {
-        val offset = page * Constants.CHARACTERS_LIMIT_REMOTE.toInt()
-        val characterContent = api.getCharacters(offset = offset.toString())
-        val characters =
-            characterContent.data.results.filter { !it.thumbnail.path.contains("image_") }
+    private suspend fun updateProperty( totalRecordsApi: Int, recordsObtained: Int) {
         page++
-        totalRecordsApi = characterContent.data.total
-        recordsObtained += characterContent.data.count
-        updateData()
-        return characters
+        this.totalRecordsApi = totalRecordsApi
+        this.recordsObtained += recordsObtained
+
+        saveHandler()
     }
 
+    private suspend fun populateProperty() {
+        if (totalRecordsApi == 0) {
+            local.getHandler()?.let{
+                page = it.page
+                totalRecordsApi = it.totalRecordsApi
+                recordsObtained = it.recordsObtained
+            }
+
+        }
+    }
+
+    private suspend fun saveHandler() {
+        local.insert(DtoRemoteRequestHandler(
+            id = 1,
+            page = page,
+            recordsObtained = recordsObtained,
+            totalRecordsApi = totalRecordsApi
+        ))
+    }
+
+    private fun getOffset() = (page * Constants.CHARACTERS_LIMIT_REMOTE.toInt()).toString()
 
 }

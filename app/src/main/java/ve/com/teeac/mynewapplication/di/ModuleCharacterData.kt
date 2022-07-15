@@ -30,7 +30,6 @@ object ModuleCharacterData {
     fun providerCharacterLocalDataSource(db: AppDatabase): CharactersLocalDataSource {
         return CharactersLocalDataSource(
             dao = db.characterDao,
-            daoHandler = db.requestLocalHandlerDao
         )
     }
 
