@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.core.presentations
+package ve.com.teeac.mynewapplication.presentations.shared
 
 
 import androidx.compose.animation.core.*
@@ -75,8 +75,8 @@ fun LoadingAnimation(
 
 }
 
-//@Preview
-//@Composable
-//private fun LoadingAnimationPreview() {
-//    LoadingAnimation()
-//}
+@Preview
+@Composable
+private fun LoadingAnimationPreview() {
+    LoadingAnimation()
+}

@@ -1,4 +1,4 @@
-package ve.com.teeac.mynewapplication.core.presentations
+package ve.com.teeac.mynewapplication.presentations.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
