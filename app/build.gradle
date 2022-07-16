@@ -7,6 +7,8 @@ plugins {
 //    id 'com.google.devtools.ksp'
 }
 
+apply from: "$project.rootDir/jacoco.gradle"
+
 android {
     compileSdk 32
 
@@ -42,6 +44,7 @@ android {
         }
 
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
