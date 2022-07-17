@@ -5,6 +5,7 @@ import timber.log.Timber
 import ve.com.teeac.mynewapplication.data.dtos.DataContainer
 import ve.com.teeac.mynewapplication.data.dtos.DataWrapper
 import ve.com.teeac.mynewapplication.data.dtos.ItemDto
+import ve.com.teeac.mynewapplication.data.dtos.ThumbnailDto
 import ve.com.teeac.mynewapplication.utils.Constants
 import javax.inject.Inject
 
@@ -31,13 +32,20 @@ class ItemsRemoteDataSource @Inject constructor(
         updateProperties(items.data)
         return items.data.results
             .filter { !it.thumbnail.path.contains("image_") }
-            .map { it.copy(idCharacter = id, type = typeItem) }
+            .map {
+                it.copy(
+                    idCharacter = id, type = typeItem, thumbnail = ThumbnailDto(
+                        it.thumbnail.extension,
+                        it.thumbnail.path.replace("http", "https")
+                    )
+                )
+            }
 
     }
 
-    private suspend fun getItemsFromApi(id: Int): DataWrapper<ItemDto>{
+    private suspend fun getItemsFromApi(id: Int): DataWrapper<ItemDto> {
         val offset = (page * Constants.ITEMS_LIMIT.toInt()).toString()
-        return  when (typeItem) {
+        return when (typeItem) {
             "COMICS" -> api.getComicByCharacterId(id, offset)
             "SERIES" -> api.getSeriesByCharacterId(id, offset)
             "EVENTS" -> api.getEventsByCharacterId(id, offset)
@@ -58,7 +66,7 @@ class ItemsRemoteDataSource @Inject constructor(
     }
 
     private fun hasRecordPending(): Boolean {
-        if(recordsObtained == 0) return true
+        if (recordsObtained == 0) return true
         return recordsObtained < totalRecordsApi
     }
 

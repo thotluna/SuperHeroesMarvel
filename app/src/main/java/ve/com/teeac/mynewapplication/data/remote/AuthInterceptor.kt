@@ -31,3 +31,17 @@ class AuthInterceptor : Interceptor {
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
 }
+
+class ChangeProtocolInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val newUrl = chain.request().url
+            .newBuilder()
+            .scheme("https")
+            .build()
+        val newRequest = chain.request()
+            .newBuilder()
+            .url(newUrl)
+            .build()
+        return chain.proceed(newRequest)
+    }
+}

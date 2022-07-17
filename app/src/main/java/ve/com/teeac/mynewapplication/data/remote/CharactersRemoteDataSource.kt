@@ -2,6 +2,7 @@ package ve.com.teeac.mynewapplication.data.remote
 
 import ve.com.teeac.mynewapplication.data.dtos.CharacterDto
 import ve.com.teeac.mynewapplication.data.dtos.DtoRemoteRequestHandler
+import ve.com.teeac.mynewapplication.data.dtos.ThumbnailDto
 import ve.com.teeac.mynewapplication.data.local.daos.RemoteRequestHandlerDao
 import ve.com.teeac.mynewapplication.utils.Constants
 import javax.inject.Inject
@@ -15,7 +16,7 @@ class CharactersRemoteDataSource @Inject constructor(
     private var totalRecordsApi = 0
     private var recordsObtained = 0
 
-    suspend fun getCharacterById(id:Int): CharacterDto{
+    suspend fun getCharacterById(id: Int): CharacterDto {
         return api.getCharacterById(id).data.results.first()
     }
 
@@ -50,16 +51,28 @@ class CharactersRemoteDataSource @Inject constructor(
     private suspend fun getCharactersByApi(): List<CharacterDto> {
         val characterContent = api.getCharacters(offset = getOffset()).data
 
-        updateProperty( characterContent.total, characterContent.count)
-        return characterContent.results.filter { !it.thumbnail.path.contains("image_") }
+        updateProperty(characterContent.total, characterContent.count)
+        return handlerCharacterList(characterContent.results)
     }
 
     private suspend fun getCharactersByNameStart(nameStart: String): List<CharacterDto> {
-        return api.getCharactersByStartName(nameStartsWith = nameStart)
-            .data.results.filter { !it.thumbnail.path.contains("image_") }
+        val list =  api.getCharactersByStartName(nameStartsWith = nameStart)
+        return handlerCharacterList(list.data.results)
     }
 
-    private suspend fun updateProperty( totalRecordsApi: Int, recordsObtained: Int) {
+    private fun handlerCharacterList(list: List<CharacterDto>): List<CharacterDto>{
+        return list.filter { !it.thumbnail.path.contains("image_") }
+            .map {
+                it.copy(
+                    thumbnail = ThumbnailDto(
+                        it.thumbnail.extension,
+                        it.thumbnail.path.replace("http", "https")
+                    )
+                )
+            }
+    }
+
+    private suspend fun updateProperty(totalRecordsApi: Int, recordsObtained: Int) {
         page++
         this.totalRecordsApi = totalRecordsApi
         this.recordsObtained += recordsObtained
@@ -69,7 +82,7 @@ class CharactersRemoteDataSource @Inject constructor(
 
     private suspend fun populateProperty() {
         if (totalRecordsApi == 0) {
-            local.getHandler()?.let{
+            local.getHandler()?.let {
                 page = it.page
                 totalRecordsApi = it.totalRecordsApi
                 recordsObtained = it.recordsObtained
@@ -79,12 +92,14 @@ class CharactersRemoteDataSource @Inject constructor(
     }
 
     private suspend fun saveHandler() {
-        local.insert(DtoRemoteRequestHandler(
-            id = 1,
-            page = page,
-            recordsObtained = recordsObtained,
-            totalRecordsApi = totalRecordsApi
-        ))
+        local.insert(
+            DtoRemoteRequestHandler(
+                id = 1,
+                page = page,
+                recordsObtained = recordsObtained,
+                totalRecordsApi = totalRecordsApi
+            )
+        )
     }
 
     private fun getOffset() = (page * Constants.CHARACTERS_LIMIT_REMOTE.toInt()).toString()
