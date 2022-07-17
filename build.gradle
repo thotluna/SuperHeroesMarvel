@@ -11,10 +11,12 @@ buildscript {
         material_version = '1.0.0-alpha13'
         mockk_version = '1.12.4'
         room_version = '2.5.0-alpha02'
+        sonarqube_version = '2.7.1'
         text_ext_version = '1.1.3'
     }
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.4.0.2513"
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -23,10 +25,27 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
 //    id 'com.google.devtools.ksp' version '1.6.21-1.0.6'
     id 'jacoco'
+    id "org.sonarqube" version "3.4.0.2513"
 }
-
 allprojects {
     apply plugin: 'jacoco'
+}
+
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "ve.com.teeac.mynewapplication"
+        property "sonar.projectKey", "sqp_dede7c883e9674bff20d201b4943d45733c2fc3c"
+        property "sonar.tests", ["src/test/java"]
+        property "sonar.test.inclusions", "**/*Test*/**"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.sources", "src/main/java"
+        property "sonar.exclusions", '**/*Test*/**,' +
+                '*.json,' +
+                '**/*test*/**,' +
+                '**/.gradle/**,' +
+                '**/R.class'
+    }
 }
 
 task clean(type: Delete) {
