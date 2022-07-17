@@ -1,13 +1,11 @@
 package ve.com.teeac.mynewapplication.data.remote
 
-import androidx.compose.ui.geometry.Offset
-import timber.log.Timber
+import javax.inject.Inject
 import ve.com.teeac.mynewapplication.data.dtos.DataContainer
 import ve.com.teeac.mynewapplication.data.dtos.DataWrapper
 import ve.com.teeac.mynewapplication.data.dtos.ItemDto
 import ve.com.teeac.mynewapplication.data.dtos.ThumbnailDto
 import ve.com.teeac.mynewapplication.utils.Constants
-import javax.inject.Inject
 
 class ItemsRemoteDataSource @Inject constructor(
     private val api: ApiService,
@@ -40,7 +38,6 @@ class ItemsRemoteDataSource @Inject constructor(
                     )
                 )
             }
-
     }
 
     private suspend fun getItemsFromApi(id: Int): DataWrapper<ItemDto> {
@@ -69,6 +66,4 @@ class ItemsRemoteDataSource @Inject constructor(
         if (recordsObtained == 0) return true
         return recordsObtained < totalRecordsApi
     }
-
-
 }

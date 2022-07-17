@@ -6,13 +6,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ve.com.teeac.mynewapplication.data.local.AppDatabase
 import ve.com.teeac.mynewapplication.data.remote.ApiService
 import ve.com.teeac.mynewapplication.data.remote.apiClient
 import ve.com.teeac.mynewapplication.utils.Constants
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -38,9 +38,4 @@ object ModuleApp {
             AppDatabase.DATABASE_NAME
         ).build()
     }
-
-
-
-
-
 }

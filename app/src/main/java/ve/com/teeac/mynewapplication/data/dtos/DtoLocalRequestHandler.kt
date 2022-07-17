@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class DtoLocalRequestHandler(
     @PrimaryKey
     val id: Int = 1,
-    val page: Int = 0,
+    val page: Int = 0
 )

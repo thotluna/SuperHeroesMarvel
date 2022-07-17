@@ -2,7 +2,6 @@ package ve.com.teeac.mynewapplication.domain.repositories
 
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
-import ve.com.teeac.mynewapplication.domain.models.Item
 
 interface CharactersRepository {
 

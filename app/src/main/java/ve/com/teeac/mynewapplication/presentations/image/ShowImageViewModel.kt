@@ -23,5 +23,4 @@ constructor(
             _urlImage = it
         }
     }
-
 }

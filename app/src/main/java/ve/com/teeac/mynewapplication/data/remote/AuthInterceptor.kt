@@ -1,11 +1,11 @@
 package ve.com.teeac.mynewapplication.data.remote
 
-import okhttp3.Interceptor
-import okhttp3.Response
-import ve.com.teeac.mynewapplication.BuildConfig
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.sql.Timestamp
+import okhttp3.Interceptor
+import okhttp3.Response
+import ve.com.teeac.mynewapplication.BuildConfig
 
 class AuthInterceptor : Interceptor {
     private val ts = Timestamp(System.currentTimeMillis()).time.toString()

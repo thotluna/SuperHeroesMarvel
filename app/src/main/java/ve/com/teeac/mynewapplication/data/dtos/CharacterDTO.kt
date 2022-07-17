@@ -1,3 +1,4 @@
+
 package ve.com.teeac.mynewapplication.data.dtos
 
 import androidx.room.Embedded
@@ -13,9 +14,9 @@ data class CharacterDto(
     val name: String,
     val description: String,
     @Embedded(prefix = "image_")
-    val thumbnail: ThumbnailDto,
-){
-    fun toCharacter(): Character{
+    val thumbnail: ThumbnailDto
+) {
+    fun toCharacter(): Character {
         return Character(
             id = id,
             name = name,
@@ -24,7 +25,7 @@ data class CharacterDto(
         )
     }
 
-    fun toCharacterItem(): CharacterItem{
+    fun toCharacterItem(): CharacterItem {
         return CharacterItem(
             id = id,
             name = name,

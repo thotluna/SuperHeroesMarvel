@@ -39,7 +39,7 @@ interface ApiService {
     suspend fun getEventsByCharacterId(
         @Path("id") id: Int,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = Constants.ITEMS_LIMIT ,
+        @Query("limit") limit: String = Constants.ITEMS_LIMIT,
         @Query("orderBy") orderBy: String = "name"
     ): DataWrapper<ItemDto>
 
@@ -47,9 +47,7 @@ interface ApiService {
     suspend fun getSeriesByCharacterId(
         @Path("id") id: Int,
         @Query("offset") offset: String = "0",
-        @Query("limit") limit: String = Constants.ITEMS_LIMIT ,
+        @Query("limit") limit: String = Constants.ITEMS_LIMIT,
         @Query("orderBy") orderBy: String = "title"
     ): DataWrapper<ItemDto>
-
-
 }

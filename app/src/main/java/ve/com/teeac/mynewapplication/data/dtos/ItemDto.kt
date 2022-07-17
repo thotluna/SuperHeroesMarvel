@@ -1,3 +1,4 @@
+
 package ve.com.teeac.mynewapplication.data.dtos
 
 import androidx.room.ColumnInfo
@@ -16,15 +17,15 @@ data class ItemDto(
     val title: String? = "",
     val description: String? = "",
     @Embedded(prefix = "image_")
-    val thumbnail: ThumbnailDto =  ThumbnailDto()
-){
+    val thumbnail: ThumbnailDto = ThumbnailDto()
+) {
 
-    fun toItem(): Item{
+    fun toItem(): Item {
         return Item(
             id = id,
             description = description,
-            title = title?: "",
-            thumbnail =  thumbnail.toThumbnail()
+            title = title ?: "",
+            thumbnail = thumbnail.toThumbnail()
         )
     }
 }

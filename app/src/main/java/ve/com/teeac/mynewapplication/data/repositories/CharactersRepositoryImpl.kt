@@ -1,15 +1,14 @@
 package ve.com.teeac.mynewapplication.data.repositories
 
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import ve.com.teeac.mynewapplication.data.dtos.CharacterDto
 import ve.com.teeac.mynewapplication.data.local.CharactersLocalDataSource
 import ve.com.teeac.mynewapplication.data.remote.CharactersRemoteDataSource
 import ve.com.teeac.mynewapplication.domain.models.Character
 import ve.com.teeac.mynewapplication.domain.models.CharacterItem
 import ve.com.teeac.mynewapplication.domain.repositories.CharactersRepository
 import ve.com.teeac.mynewapplication.utils.Constants
-import javax.inject.Inject
 
 class CharactersRepositoryImpl
 @Inject
@@ -33,7 +32,7 @@ constructor(
             if (list.isNotEmpty()) local.reverseLastPage()
             val listRemote =
                 remote.getCharacters(nameStart = nameStartsWith, forceUpdate = forceUpdate)
-            if(listRemote.isEmpty()) return emptyList()
+            if (listRemote.isEmpty()) return emptyList()
             local.insertCharacters(listRemote)
             list = local.getCharacters(nameStartsWith)
         }
@@ -49,6 +48,4 @@ constructor(
         }
         return character.toCharacter()
     }
-
-
 }

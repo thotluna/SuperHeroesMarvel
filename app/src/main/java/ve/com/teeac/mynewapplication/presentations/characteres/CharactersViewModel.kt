@@ -6,13 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 import ve.com.teeac.mynewapplication.domain.use_cases.GetCharacters
 import ve.com.teeac.mynewapplication.utils.Response
-import javax.inject.Inject
 
 @HiltViewModel
 class CharactersViewModel
@@ -67,7 +66,5 @@ constructor(
     override fun onCleared() {
         super.onCleared()
         job?.cancel()
-
     }
-
 }

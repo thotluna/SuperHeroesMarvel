@@ -1,11 +1,11 @@
 package ve.com.teeac.mynewapplication.data.remote
 
+import javax.inject.Inject
 import ve.com.teeac.mynewapplication.data.dtos.CharacterDto
 import ve.com.teeac.mynewapplication.data.dtos.DtoRemoteRequestHandler
 import ve.com.teeac.mynewapplication.data.dtos.ThumbnailDto
 import ve.com.teeac.mynewapplication.data.local.daos.RemoteRequestHandlerDao
 import ve.com.teeac.mynewapplication.utils.Constants
-import javax.inject.Inject
 
 class CharactersRemoteDataSource @Inject constructor(
     private val api: ApiService,
@@ -56,11 +56,11 @@ class CharactersRemoteDataSource @Inject constructor(
     }
 
     private suspend fun getCharactersByNameStart(nameStart: String): List<CharacterDto> {
-        val list =  api.getCharactersByStartName(nameStartsWith = nameStart)
+        val list = api.getCharactersByStartName(nameStartsWith = nameStart)
         return handlerCharacterList(list.data.results)
     }
 
-    private fun handlerCharacterList(list: List<CharacterDto>): List<CharacterDto>{
+    private fun handlerCharacterList(list: List<CharacterDto>): List<CharacterDto> {
         return list.filter { !it.thumbnail.path.contains("image_") }
             .map {
                 it.copy(
@@ -87,7 +87,6 @@ class CharactersRemoteDataSource @Inject constructor(
                 totalRecordsApi = it.totalRecordsApi
                 recordsObtained = it.recordsObtained
             }
-
         }
     }
 
@@ -103,5 +102,4 @@ class CharactersRemoteDataSource @Inject constructor(
     }
 
     private fun getOffset() = (page * Constants.CHARACTERS_LIMIT_REMOTE.toInt()).toString()
-
 }

@@ -33,5 +33,4 @@ fun ShowImageScreen(
             failure = { Text(text = "image request failed.") }
         )
     }
-
 }

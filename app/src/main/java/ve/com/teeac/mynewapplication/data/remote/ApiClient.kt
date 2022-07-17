@@ -11,6 +11,3 @@ fun apiClient() = OkHttpClient()
         level = HttpLoggingInterceptor.Level.BODY
     })
     .build()
-
-
-

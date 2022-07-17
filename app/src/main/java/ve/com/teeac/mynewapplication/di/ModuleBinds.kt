@@ -4,9 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import ve.com.teeac.mynewapplication.data.repositories.ItemsRepositoryImp
 import ve.com.teeac.mynewapplication.domain.repositories.ItemsRepository
-import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -54,4 +54,3 @@ annotation class EventRepositoryImp
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class SeriesRepositoryImp
-

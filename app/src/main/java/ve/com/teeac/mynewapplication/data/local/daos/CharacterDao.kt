@@ -10,10 +10,10 @@ import ve.com.teeac.mynewapplication.utils.Constants
 @Dao
 interface CharacterDao {
 
-    @Query("SELECT * FROM character ORDER By name LIMIT ${Constants.CHARACTERS_LIMIT_LOCAL} OFFSET :offset " )
+    @Query("SELECT * FROM character ORDER By name LIMIT ${Constants.CHARACTERS_LIMIT_LOCAL} OFFSET :offset ")
     suspend fun getAllCharacter(offset: Int = 0): List<CharacterDto>
 
-    @Query("SELECT * FROM character WHERE name like :nameStartsWith || '%' LIMIT ${Constants.CHARACTERS_LIMIT_LOCAL} OFFSET :offset" )
+    @Query("SELECT * FROM character WHERE name like :nameStartsWith || '%' LIMIT ${Constants.CHARACTERS_LIMIT_LOCAL} OFFSET :offset")
     suspend fun getAllCharacter(offset: Int = 0, nameStartsWith: String = ""): List<CharacterDto>
 
     @Query("SELECT * FROM character WHERE id= :id")
@@ -27,5 +27,4 @@ interface CharacterDao {
 
     @Query("DELETE FROM character")
     suspend fun deleteAll()
-
 }

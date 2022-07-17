@@ -1,5 +1,5 @@
 package ve.com.teeac.mynewapplication.domain.models
 
-enum class TypeItem{
+enum class TypeItem {
     COMICS, EVENTS, SERIES
 }
