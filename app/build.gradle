@@ -35,6 +35,7 @@ android {
 
         buildConfigField("String", "MARVEL_PUBLIC_KEY", marvel_public_key)
         buildConfigField("String", "MARVEL_PRIVATE_KEY", marvel_private_key)
+        buildConfigField("String", "SONAR_PRIVATE_KEY", sonar_private_key)
     }
 
     buildTypes {

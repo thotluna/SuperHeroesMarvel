@@ -1,3 +1,4 @@
+
 buildscript {
     ext {
         activity_version = '1.4.0'
@@ -20,7 +21,8 @@ buildscript {
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:$sonarqube_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:$ktlint_version"
     }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+}
+
 plugins {
     id 'com.android.application' version '7.2.1' apply false
     id 'com.android.library' version '7.2.1' apply false
@@ -30,9 +32,13 @@ plugins {
     id "org.sonarqube" version "3.4.0.2513"
     id "org.jlleitschuh.gradle.ktlint" version "10.2.1"
 }
+
+apply from: "$project.rootDir/sonar.gradle"
+
 allprojects {
     apply plugin: 'jacoco'
 }
+
 configurations {
     ktlint
 }
@@ -52,22 +58,8 @@ task ktlintFormatF(type: JavaExec, group: "formatting") {
     args "-F", "src/**/*.kt"
 }
 
-sonarqube {
-    properties {
-        property "sonar.projectName", "ve.com.teeac.mynewapplication"
-        property "sonar.projectKey", "sqp_dede7c883e9674bff20d201b4943d45733c2fc3c"
-        property "sonar.tests", ["src/test/java"]
-        property "sonar.test.inclusions", "**/*Test*/**"
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.sources", "src/main/java"
-        property "sonar.exclusions", '**/*Test*/**,' +
-                '*.json,' +
-                '**/*test*/**,' +
-                '**/.gradle/**,' +
-                '**/R.class'
-    }
-}
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+project.tasks["sonarqube"].dependsOn(["app:jacocoTestReport"])

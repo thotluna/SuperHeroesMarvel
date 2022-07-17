@@ -20,6 +20,7 @@ import ve.com.teeac.mynewapplication.presentations.shared.TopAppBar
 import ve.com.teeac.mynewapplication.presentations.navigations.AppGraph
 import ve.com.teeac.mynewapplication.ui.theme.MyNewApplicationTheme
 
+@SuppressWarnings("unused")
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
