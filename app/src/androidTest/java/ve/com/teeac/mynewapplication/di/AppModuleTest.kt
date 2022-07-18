@@ -4,24 +4,26 @@ import android.app.Application
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import dagger.hilt.testing.TestInstallIn
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ve.com.teeac.mynewapplication.data.local.AppDatabase
 import ve.com.teeac.mynewapplication.data.remote.ApiService
 import ve.com.teeac.mynewapplication.data.remote.apiClient
-import ve.com.teeac.mynewapplication.utils.Constants
+import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
-object ModuleApp {
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [ModuleApp::class]
+)
+object AppModuleTest {
 
     @Singleton
     @Provides
     @ApiAddress
-    fun provideApiAddress(): String = Constants.BASE_URL
+    fun provideApiAddress(): String = "http://localhost:8080/api/"
 
     @Singleton
     @Provides
@@ -37,10 +39,10 @@ object ModuleApp {
     @Provides
     @Singleton
     fun provideDatabase(app: Application): AppDatabase {
-        return Room.databaseBuilder(
+        return Room.inMemoryDatabaseBuilder(
             app,
             AppDatabase::class.java,
-            AppDatabase.DATABASE_NAME
         ).build()
     }
+
 }
