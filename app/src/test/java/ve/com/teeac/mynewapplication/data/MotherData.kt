@@ -109,6 +109,8 @@ object MotherData {
     )
 
     val dataWrapper = DataWrapper(
+        code = 0,
+        status = "",
         DataContainer(
             total = 3,
             count = 1,
@@ -147,6 +149,8 @@ object MotherData {
     val listItem = listOf(oneItem, twoItem, itemWithoutThumbnail)
 
     val dataWrapperItem = DataWrapper(
+        code = 0,
+        status = "",
         DataContainer(
             total = 3,
             count = 1,

@@ -114,6 +114,8 @@ class CharactersRemoteDataSourceTest {
     fun `should return an unfiltered character`() {
         val character = MotherData.characterWithoutThumbnail
         coEvery { apiService.getCharacterById(character.id) } returns DataWrapper(
+            code = 0,
+            status = "",
             DataContainer(
                 total = 1,
                 count = 1,
@@ -134,6 +136,8 @@ class CharactersRemoteDataSourceTest {
     fun `should return emptyList after get all character from api `(){
         val dtoInitial = MotherData.dtoRemoteHandlerInitial
         val dataWrapper = DataWrapper(
+            code = 0,
+            status = "",
             DataContainer(
                 total = 3,
                 count = 3,
